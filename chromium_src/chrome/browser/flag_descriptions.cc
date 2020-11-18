@@ -66,6 +66,8 @@ const char kBraveSuperReferralDescription[] =
 const char kBraveEphemeralStorageName[] = "Enable Ephemeral Storage";
 const char kBraveEphemeralStorageDescription[] =
     "Use ephemeral storage for third-party frames";
+const char kPlaylistName[] = "Playlist";
+const char kPlaylistDescription[] = "Download web videos for later viewing.";
 const char kBravePermissionLifetimeName[] = "Permission Lifetime";
 const char kBravePermissionLifetimeDescription[] =
     "Enables the option to choose a time period after which a permission will "
