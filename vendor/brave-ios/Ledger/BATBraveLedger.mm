@@ -78,6 +78,7 @@ static const auto kOneDay = base::Time::kHoursPerDay * base::Time::kSecondsPerHo
 const std::map<std::string, bool> kBoolOptions = {
     {ledger::option::kClaimUGP, true},
     {ledger::option::kContributionsDisabledForBAPMigration, false},
+    {ledger::option::kIsBitflyerRegion, false},
     {ledger::option::kShouldReportBAPAmount, false}};
 const std::map<std::string, int> kIntegerOptions = {};
 const std::map<std::string, double> kDoubleOptions = {};
