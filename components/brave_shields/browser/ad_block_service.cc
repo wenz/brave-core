@@ -24,6 +24,7 @@
 #include "brave/components/brave_shields/browser/ad_block_custom_filters_service.h"
 #include "brave/components/brave_shields/browser/ad_block_regional_service_manager.h"
 #include "brave/components/brave_shields/browser/ad_block_service_helper.h"
+#include "brave/components/brave_shields/browser/ad_block_subscription_service_manager.h"
 #include "brave/components/brave_shields/common/brave_shield_constants.h"
 #include "brave/components/brave_shields/common/features.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -97,6 +98,13 @@ void AdBlockService::ShouldStartRequest(
     return;
   }
 
+  subscription_service_manager()->ShouldStartRequest(
+      url, resource_type, tab_host, did_match_rule, did_match_exception,
+      did_match_important, mock_data_url);
+  if (did_match_important && *did_match_important) {
+    return;
+  }
+
   custom_filters_service()->ShouldStartRequest(
       url, resource_type, tab_host, did_match_rule, did_match_exception,
       did_match_important, mock_data_url);
@@ -127,6 +135,14 @@ base::Optional<base::Value> AdBlockService::UrlCosmeticResources(
                        /*force_hide=*/true);
   }
 
+  base::Optional<base::Value> subscription_resources =
+      subscription_service_manager()->UrlCosmeticResources(url);
+
+  if (subscription_resources && subscription_resources->is_dict()) {
+    MergeResourcesInto(std::move(*subscription_resources), &*resources,
+                       /*force_hide=*/true);
+  }
+
   return resources;
 }
 
@@ -141,10 +157,6 @@ base::Optional<base::Value> AdBlockService::HiddenClassIdSelectors(
       regional_service_manager()->HiddenClassIdSelectors(classes, ids,
                                                          exceptions);
 
-  base::Optional<base::Value> custom_selectors =
-      custom_filters_service()->HiddenClassIdSelectors(classes, ids,
-                                                       exceptions);
-
   if (hide_selectors && hide_selectors->is_list()) {
     if (regional_selectors && regional_selectors->is_list()) {
       for (auto i = regional_selectors->GetList().begin();
@@ -154,6 +166,25 @@ base::Optional<base::Value> AdBlockService::HiddenClassIdSelectors(
     }
   } else {
     hide_selectors = std::move(regional_selectors);
+  }
+
+  base::Optional<base::Value> custom_selectors =
+      custom_filters_service()->HiddenClassIdSelectors(classes, ids,
+                                                       exceptions);
+
+  base::Optional<base::Value> subscription_selectors =
+      subscription_service_manager()->HiddenClassIdSelectors(classes, ids,
+                                                             exceptions);
+
+  if (custom_selectors && custom_selectors->is_list()) {
+    if (subscription_selectors && subscription_selectors->is_list()) {
+      for (auto i = subscription_selectors->GetList().begin();
+           i < subscription_selectors->GetList().end(); i++) {
+        custom_selectors->Append(std::move(*i));
+      }
+    }
+  } else {
+    custom_selectors = std::move(subscription_selectors);
   }
 
 #if !defined(OS_ANDROID) && !defined(CHROME_OS)
@@ -194,6 +225,13 @@ AdBlockService::custom_filters_service() {
     custom_filters_service_ =
         brave_shields::AdBlockCustomFiltersServiceFactory(component_delegate_);
   return custom_filters_service_.get();
+}
+
+brave_shields::AdBlockSubscriptionServiceManager* AdBlockService::subscription_service_manager() {
+  if (!subscription_service_manager_) {
+     subscription_service_manager_ = brave_shields::AdBlockSubscriptionServiceManagerFactory(component_delegate_);
+  }
+  return subscription_service_manager_.get();
 }
 
 AdBlockService::AdBlockService(
