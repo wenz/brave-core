@@ -459,6 +459,11 @@ void RewardsServiceImpl::StartLedgerProcessIfNecessary() {
 
   SetDebug(false);
 
+  // TODO(zenparsing) [BF POST-MVP] For BF MVP, pin to the staging environment
+  // by default and enable rewards-internals logging
+  SetEnvironment(ledger::type::Environment::STAGING);
+  should_persist_logs_ = true;
+
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
