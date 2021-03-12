@@ -15,14 +15,12 @@
 #include "bat/ledger/internal/bitflyer/bitflyer_util.h"
 #include "bat/ledger/internal/bitflyer/bitflyer_wallet.h"
 #include "bat/ledger/internal/common/time_util.h"
-#include "bat/ledger/internal/endpoint/bitflyer/bitflyer_server.h"
 #include "bat/ledger/internal/ledger_impl.h"
 #include "bat/ledger/internal/logging/event_log_keys.h"
 #include "brave_base/random.h"
 
 using std::placeholders::_1;
 using std::placeholders::_2;
-using std::placeholders::_3;
 
 namespace {
 const char kFeeMessage[] =
@@ -36,7 +34,6 @@ Bitflyer::Bitflyer(LedgerImpl* ledger)
     : transfer_(std::make_unique<BitflyerTransfer>(ledger)),
       authorization_(std::make_unique<BitflyerAuthorization>(ledger)),
       wallet_(std::make_unique<BitflyerWallet>(ledger)),
-      bitflyer_server_(std::make_unique<endpoint::BitflyerServer>(ledger)),
       ledger_(ledger) {}
 
 Bitflyer::~Bitflyer() = default;
@@ -113,26 +110,29 @@ void Bitflyer::FetchBalance(FetchBalanceCallback callback) {
   auto url_callback =
       std::bind(&Bitflyer::OnFetchBalance, this, _1, _2, callback);
 
-  bitflyer_server_->get_balance()->Request(wallet->token, url_callback);
+  ledger_->context()
+      ->Get<BitflyerBalanceEndpoint>()
+      ->RequestBalance(wallet->token)
+      .Then(base::BindOnce(&Bitflyer::OnFetchBalance, base::Unretained(this),
+                           callback));
 }
 
-void Bitflyer::OnFetchBalance(const type::Result result,
-                              const double available,
-                              FetchBalanceCallback callback) {
-  if (result == type::Result::EXPIRED_TOKEN) {
+void Bitflyer::OnFetchBalance(FetchBalanceCallback callback,
+                              const BitflyerBalanceResponse& response) {
+  if (response.error == BitflyerBalanceError::kExpiredToken) {
     BLOG(0, "Expired token");
     DisconnectWallet();
     callback(type::Result::EXPIRED_TOKEN, 0.0);
     return;
   }
 
-  if (result != type::Result::LEDGER_OK) {
+  if (response.error != BitflyerBalanceError::kSuccess) {
     BLOG(0, "Couldn't get balance");
     callback(type::Result::LEDGER_ERROR, 0.0);
     return;
   }
 
-  callback(type::Result::LEDGER_OK, available);
+  callback(type::Result::LEDGER_OK, response.balance);
 }
 
 void Bitflyer::TransferFunds(const double amount,

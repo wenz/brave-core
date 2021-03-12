@@ -10,7 +10,8 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "bat/ledger/internal/endpoint/bitflyer/bitflyer_server.h"
+#include "bat/ledger/internal/bitflyer/bitflyer_linking_endpoint.h"
+#include "bat/ledger/internal/bitflyer/bitflyer_oauth_endpoint.h"
 #include "bat/ledger/ledger.h"
 
 namespace ledger {
@@ -25,23 +26,18 @@ class BitflyerAuthorization {
   ~BitflyerAuthorization();
 
   void Authorize(const base::flat_map<std::string, std::string>& args,
-                 ledger::ExternalWalletAuthorizationCallback callback);
+                 ExternalWalletAuthorizationCallback callback);
 
  private:
-  void OnAuthorize(const type::Result result,
-                   const std::string& token,
-                   const std::string& address,
-                   const std::string& linking_info,
-                   ledger::ExternalWalletAuthorizationCallback callback);
+  void OnAuthorize(ExternalWalletAuthorizationCallback callback,
+                   const BitflyerOAuthResponse& response);
 
-  void OnClaimWallet(const type::Result result,
-                     const std::string& token,
+  void OnClaimWallet(const std::string& token,
                      const std::string& address,
-                     const std::string& linking_info,
-                     ledger::ExternalWalletAuthorizationCallback callback);
+                     ExternalWalletAuthorizationCallback callback,
+                     const BitflyerLinkingResponse& response);
 
   LedgerImpl* ledger_;  // NOT OWNED
-  std::unique_ptr<endpoint::BitflyerServer> bitflyer_server_;
 };
 
 }  // namespace bitflyer

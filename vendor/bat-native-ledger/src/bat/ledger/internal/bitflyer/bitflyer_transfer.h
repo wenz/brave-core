@@ -11,14 +11,11 @@
 #include <string>
 
 #include "bat/ledger/internal/bitflyer/bitflyer.h"
+#include "bat/ledger/internal/bitflyer/bitflyer_transfer_endpoint.h"
 #include "bat/ledger/ledger.h"
 
 namespace ledger {
 class LedgerImpl;
-
-namespace endpoint {
-class BitflyerServer;
-}
 
 namespace bitflyer {
 
@@ -32,12 +29,10 @@ class BitflyerTransfer {
              client::TransactionCallback callback);
 
  private:
-  void OnCreateTransaction(const type::Result result,
-                           const std::string& id,
-                           client::TransactionCallback callback);
+  void OnCreateTransaction(client::TransactionCallback callback,
+                           const BitflyerTransferResponse& response);
 
   LedgerImpl* ledger_;  // NOT OWNED
-  std::unique_ptr<endpoint::BitflyerServer> bitflyer_server_;
 };
 
 }  // namespace bitflyer

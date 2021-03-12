@@ -14,14 +14,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/timer/timer.h"
+#include "bat/ledger/internal/bitflyer/bitflyer_balance_endpoint.h"
 #include "bat/ledger/ledger.h"
 
 namespace ledger {
 class LedgerImpl;
-
-namespace endpoint {
-class BitflyerServer;
-}
 
 namespace bitflyer {
 
@@ -76,9 +73,8 @@ class Bitflyer {
                              const std::string& publisher_key,
                              ledger::ResultCallback callback);
 
-  void OnFetchBalance(const type::Result result,
-                      const double available,
-                      FetchBalanceCallback callback);
+  void OnFetchBalance(FetchBalanceCallback callback,
+                      const BitflyerBalanceResponse& response);
 
   void SaveTransferFee(const std::string& contribution_id, const double amount);
 
@@ -100,7 +96,6 @@ class Bitflyer {
   std::unique_ptr<BitflyerTransfer> transfer_;
   std::unique_ptr<BitflyerAuthorization> authorization_;
   std::unique_ptr<BitflyerWallet> wallet_;
-  std::unique_ptr<endpoint::BitflyerServer> bitflyer_server_;
   LedgerImpl* ledger_;  // NOT OWNED
   std::map<std::string, base::OneShotTimer> transfer_fee_timers_;
 };

@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "bat/ledger/internal/bitflyer/bitflyer_authorization.h"
+#include "bat/ledger/internal/bitflyer/bitflyer_oauth_handler.h"
 
 #include <utility>
 
@@ -13,19 +13,28 @@
 #include "bat/ledger/internal/logging/event_log_keys.h"
 
 namespace ledger {
-namespace bitflyer {
 
-BitflyerAuthorization::BitflyerAuthorization(LedgerImpl* ledger)
-    : ledger_(ledger) {}
+namespace {
 
-BitflyerAuthorization::~BitflyerAuthorization() = default;
+class LoginTask : public BATLedgerTask<OAuthResponse> {
+ public:
+  explicit LoginTask(BATLedgerContext* context) : BATLedgerTask(context) {}
 
-void BitflyerAuthorization::Authorize(
-    const base::flat_map<std::string, std::string>& args,
-    ledger::ExternalWalletAuthorizationCallback callback) {
-  const auto wallet = ledger_->wallet()->GetWallet();
+  void Start(const base::flat_map<std::string, std::string>& params) {}
+};
+
+}  // namespace
+
+BitflyerOAuthHandler::BitflyerOAuthHandler(BATLedgerContext* context)
+    : Component(context) {}
+
+BitflyerOAuthHandler::~BitflyerOAuthHandler() = default;
+
+void BitflyerOAuthHandler::HandleOAuthRedirect(
+    const base::flat_map<std::string, std::string>& params) {
+  auto wallet = context()->GetLedgerImpl()->wallet()->GetWallet();
   if (!wallet) {
-    BLOG(0, "Wallet is null");
+    context BLOG(0, "Wallet is null");
     callback(type::Result::LEDGER_ERROR, {});
     return;
   }
@@ -99,7 +108,7 @@ void BitflyerAuthorization::Authorize(
 
   ledger_->context()
       ->Get<BitflyerOAuthEndpoint>()
-      ->RequestAccessToken(wallet->payment_id, code)
+      ->RequestAuthorization(wallet->payment_id, code)
       .Then(base::BindOnce(&BitflyerAuthorization::OnAuthorize,
                            base::Unretained(this), callback));
 }
@@ -175,5 +184,4 @@ void BitflyerAuthorization::OnClaimWallet(
   callback(type::Result::LEDGER_OK, {});
 }
 
-}  // namespace bitflyer
 }  // namespace ledger

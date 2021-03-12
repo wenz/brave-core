@@ -8,20 +8,13 @@
 #include "base/strings/stringprintf.h"
 #include "bat/ledger/internal/bitflyer/bitflyer_transfer.h"
 #include "bat/ledger/internal/bitflyer/bitflyer_util.h"
-#include "bat/ledger/internal/endpoint/bitflyer/bitflyer_server.h"
 #include "bat/ledger/internal/ledger_impl.h"
 #include "net/http/http_status_code.h"
-
-using std::placeholders::_1;
-using std::placeholders::_2;
-using std::placeholders::_3;
 
 namespace ledger {
 namespace bitflyer {
 
-BitflyerTransfer::BitflyerTransfer(LedgerImpl* ledger)
-    : ledger_(ledger),
-      bitflyer_server_(std::make_unique<endpoint::BitflyerServer>(ledger)) {}
+BitflyerTransfer::BitflyerTransfer(LedgerImpl* ledger) : ledger_(ledger) {}
 
 BitflyerTransfer::~BitflyerTransfer() = default;
 
@@ -34,29 +27,28 @@ void BitflyerTransfer::Start(const Transaction& transaction,
     return;
   }
 
-  auto url_callback =
-      std::bind(&BitflyerTransfer::OnCreateTransaction, this, _1, _2, callback);
-  bitflyer_server_->post_transaction()->Request(wallet->token, transaction,
-                                                false, url_callback);
+  ledger_->context()
+      ->Get<BitflyerTransferEndpoint>()
+      ->RequestTransfer(wallet->token, transaction.address, transaction.amount)
+      .Then(base::BindOnce(&BitflyerTransfer::OnCreateTransaction,
+                           base::Unretained(this), callback));
 }
 
 void BitflyerTransfer::OnCreateTransaction(
-    const type::Result result,
-    const std::string& id,
-    client::TransactionCallback callback) {
-  if (result == type::Result::EXPIRED_TOKEN) {
+    client::TransactionCallback callback,
+    const BitflyerTransferResponse& response) {
+  if (response.error == BitflyerTransferError::kExpiredToken) {
     callback(type::Result::EXPIRED_TOKEN, "");
     ledger_->bitflyer()->DisconnectWallet();
     return;
   }
 
-  if (result != type::Result::LEDGER_OK) {
-    // TODO(nejczdovc): add retry logic to all errors in this function
+  if (response.error != BitflyerTransferError::kSuccess) {
     callback(type::Result::LEDGER_ERROR, "");
     return;
   }
 
-  callback(type::Result::LEDGER_OK, id);
+  callback(type::Result::LEDGER_OK, response.transfer_id);
 }
 
 }  // namespace bitflyer
