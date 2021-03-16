@@ -130,7 +130,7 @@ class BraveNavigatorUserAgentFarblingMobileBrowserTest
 // Tests results of farbling user agent
 IN_PROC_BROWSER_TEST_F(BraveNavigatorUserAgentFarblingBrowserTest,
                        FarbleNavigatorUserAgent) {
-  base::string16 expected_title = base::ASCIIToUTF16("pass");
+  std::u16string expected_title(u"pass");
   std::string domain_b = "b.com";
   std::string domain_z = "z.com";
   GURL url_b = embedded_test_server()->GetURL(domain_b, "/simple.html");
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(BraveNavigatorUserAgentFarblingBrowserTest,
 // Tests results of farbling with mobile user agent
 IN_PROC_BROWSER_TEST_F(BraveNavigatorUserAgentFarblingMobileBrowserTest,
                        FarbleNavigatorUserAgentMobile) {
-  base::string16 expected_title = base::ASCIIToUTF16("pass");
+  std::u16string expected_title(u"pass");
   std::string domain_b = "b.com";
   GURL url_b = embedded_test_server()->GetURL(domain_b, "/simple.html");
   SetFingerprintingDefault(domain_b);
