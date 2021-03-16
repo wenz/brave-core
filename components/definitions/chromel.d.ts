@@ -210,8 +210,6 @@ declare namespace chrome.cryptoDotCom {
   const isConnected: (callback: (connected: boolean) => void) => {}
   const isLoggedIn: (callback: (loggedIn: boolean) => void) => {}
   const isSupported: (callback: (supported: boolean) => void) => {}
-  const onBuyCrypto: () => void
-  const onInteraction: () => void
 }
 
 declare namespace chrome.braveTogether {
