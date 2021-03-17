@@ -37,4 +37,19 @@ TEST_F(AsyncResultTest, CompleteCallbacksExecutedInFutureTurn) {
   ASSERT_EQ(value, 1);
 }
 
+TEST_F(AsyncResultTest, ThenMapping) {
+  AsyncResult<int>::Resolver resolver;
+  double value = 0;
+  resolver.result()
+      .Then(base::BindOnce(
+          [](const int& v) { return static_cast<double>(v) / 2; }))
+      .Then(
+          base::BindLambdaForTesting([&value](const double& v) { value = v; }));
+
+  resolver.Complete(1);
+  ASSERT_EQ(value, 0);
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(value, 0.5);
+}
+
 }  // namespace ledger

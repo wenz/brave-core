@@ -6,12 +6,11 @@
 #ifndef BRAVE_VENDOR_BAT_NATIVE_LEDGER_SRC_BAT_LEDGER_INTERNAL_CORE_BAT_LEDGER_CONTEXT_H_
 #define BRAVE_VENDOR_BAT_NATIVE_LEDGER_SRC_BAT_LEDGER_INTERNAL_CORE_BAT_LEDGER_CONTEXT_H_
 
-#include <functional>
+#include <map>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <type_traits>
-#include <unordered_map>
 #include <utility>
 
 #include "base/bind.h"
@@ -26,53 +25,43 @@ class LedgerImpl;
 class LedgerClient;
 
 // Represents a per-user running instance of the BAT client engine. It serves as
-// a loosely-coupled container for singletons, tasks and other components that
-// are associated with the running instance. It also provides methods for
-// logging and accessing environment-specific settings.
+// a loosely-coupled container for services, jobs and other components that are
+// associated with, and owned by, the running instance. It also provides methods
+// for logging and accessing environment-specific settings.
 class BATLedgerContext {
  public:
-  // An opaque object representing a unique singleton component key.
-  class ComponentKey {
-   public:
-    ComponentKey();
-    ComponentKey(const ComponentKey&) = delete;
-    ComponentKey& operator=(const ComponentKey&) = delete;
-
-   private:
-    friend class BATLedgerContext;
-    const size_t value_;
-  };
-
   // Base class for objects that are owned by an instance of BATLedgerContext.
   // The lifetime of the component is bounded by the lifetime of the context. As
   // such, it is generally safe for a component to access its containing context
-  // by calling the |context()| accessor.
+  // by calling the |context()| accessor. Access to the containing context is
+  // not allowed from the object's constructor or destructor.
   //
-  // There are currently two primary Component subtypes: context singletons and
-  // tasks. Context singletons define a static |kComponentKey| member. Instances
+  // There are currently two primary Component subtypes: service components and
+  // jobs. Service components define a static |kComponentKey| member. Instances
   // are initialized when first requested and are destroyed when the context is
   // destroyed.
   //
   //   class MyComponent : public BATLedgerContext::Component {
   //    public:
-  //     static const BATLedgerContext::ComponentKey kComponentKey;
+  //     static const size_t kComponentKey;
   //     ...
   //   };
   //
   // The |kComponentKey| member should be initialized in the following manner:
   //
-  //   const BATLedgerContext::ComponentKey MyComponent::kComponentKey;
+  //   const size_t MyComponent::kComponentKey =
+  //       BATLedgerContext::ReserveComponentKey();
   //
-  // Task components logically represent a single asynchronous operation and are
-  // destroyed automatically when the task completes.
+  // Job classes logically represent a single asynchronous operation and are
+  // destroyed automatically when the operation completes.
   //
-  //   class MyTask : public BATLedgerContext::Component {
+  //   class MyJob : public BATLedgerContext::Component {
   //    public:
   //     AsyncResult<int> result() { ... }
   //     void Start() { ... }
   //   };
   //
-  // Tasks must implement a public |result()| method that returns an AsyncResult
+  // Jobs must implement a public |result()| method that returns an AsyncResult
   // object, and a |Start| method that begins the asynchronous operation.
   class Component {
    public:
@@ -82,11 +71,14 @@ class BATLedgerContext {
     Component& operator=(const Component&) = delete;
 
    protected:
-    explicit Component(BATLedgerContext* context);
+    Component();
+
     BATLedgerContext* context() { return context_; }
 
    private:
-    BATLedgerContext* context_;
+    friend class BATLedgerContext;
+
+    BATLedgerContext* context_ = nullptr;
   };
 
   // NOTE: Values are based on the original logging design where each level from
@@ -144,24 +136,25 @@ class BATLedgerContext {
   // does not expose a context component and will be removed in the future.
   LedgerImpl* GetLedgerImpl() const { return ledger_impl_; }
 
-  // Returns a pointer to the singleton context Component of type T. T must
-  // expose a static |kComponentKey| member. The singleton will be created if
-  // necessary.
+  // Returns a pointer to the context component of type T. T must expose a
+  // static |kComponentKey| member. The component will be created if necessary.
   //
   // Example:
   //   auto* my_component = context()->Get<MyComponent>();
   template <typename T>
   T* Get() {
     static_assert(std::is_base_of<Component, T>::value,
-                  "Get<T> requires that T is a subclass of Component");
-    size_t key = T::kComponentKey.value_;
+                  "Get<T> requires that T is a subclass of "
+                  "BATLedgerContext::Component");
+    size_t key = T::kComponentKey;
     auto iter = components_.find(key);
     if (iter != components_.end())
       return reinterpret_cast<T*>(iter->second.get());
 
-    std::unique_ptr<T> instance(new T(this));
+    std::unique_ptr<T> instance(new T());
     T* ptr = instance.get();
     components_[key] = std::move(instance);
+    ptr->context_ = this;
     return ptr;
   }
 
@@ -169,31 +162,29 @@ class BATLedgerContext {
   void SetComponentForTesting(std::unique_ptr<T> component) {
     static_assert(std::is_base_of<Component, T>::value,
                   "SetComponentForTesting<T> requires that T is a subclass of "
-                  "Component");
-    size_t key = T::kComponentKey.value_;
-    components_[key] = std::move(component);
+                  "BATLedgerContext::Component");
+    components_[T::kComponentKey] = std::move(component);
   }
 
-  // Starts a component task and returns the AsyncResult associated with the
-  // task. When the task completes, the component is destroyed.
+  // Starts a job and returns the AsyncResult associated with it. When the job
+  // completes, the job component is destroyed.
   //
   // Example:
-  //   auto result = context()->StartTask<MyTask>("hello");
+  //   auto result = context()->StartJob<MyJob>("hello");
   //   result.Then(...);
   template <typename T, typename... Args>
-  auto StartTask(Args&&... args) {
-    std::unique_ptr<T> instance(new T(this));
+  auto StartJob(Args&&... args) {
+    std::unique_ptr<T> instance(new T());
     T* ptr = instance.get();
+    jobs_[ptr] = std::move(instance);
 
-    size_t key = std::hash<T*>()(ptr);
-    tasks_[key] = std::move(instance);
-
+    ptr->context_ = this;
     ptr->Start(std::forward<Args>(args)...);
     auto result = ptr->result();
 
     using CompleteType = typename decltype(result)::CompleteType;
-    result.Then(base::BindOnce(&BATLedgerContext::OnTaskCompleted<CompleteType>,
-                               weak_factory_.GetWeakPtr(), key));
+    result.Then(base::BindOnce(&BATLedgerContext::OnJobCompleted<CompleteType>,
+                               weak_factory_.GetWeakPtr(), ptr));
 
     return result;
   }
@@ -252,16 +243,20 @@ class BATLedgerContext {
     }
   }
 
+  static size_t ReserveComponentKey();
+
  private:
   template <typename T>
-  void OnTaskCompleted(size_t task_key, const T&) {
-    tasks_.erase(task_key);
+  void OnJobCompleted(void* job_key, const T&) {
+    EraseJob(job_key);
   }
+
+  void EraseJob(void* job_key);
 
   LedgerClient* ledger_client_;
   LedgerImpl* ledger_impl_ = nullptr;
-  std::unordered_map<size_t, std::unique_ptr<Component>> components_;
-  std::unordered_map<size_t, std::unique_ptr<Component>> tasks_;
+  std::map<size_t, std::unique_ptr<Component>> components_;
+  std::map<void*, std::unique_ptr<Component>> jobs_;
   base::WeakPtrFactory<BATLedgerContext> weak_factory_{this};
 };
 
