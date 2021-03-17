@@ -51,24 +51,58 @@ TEST_F(BATLedgerContextTest, GetSettings) {
   ASSERT_EQ(dev.b, 3);
 }
 
-class TestComponent : public BATLedgerContext::Component {
+class TestComponent : public BATLedgerContext::Object {
  public:
+  struct TestOutput {
+    bool context_present_on_contruction = false;
+    bool context_present_on_destruction = false;
+  };
+
   static const BATLedgerContext::ComponentKey kComponentKey;
-  explicit TestComponent(BATLedgerContext* context) : Component(context) {}
+
+  TestComponent() { context_present_on_contruction_ = ContextPresent(); }
+
+  ~TestComponent() override {
+    if (output_)
+      output_->context_present_on_destruction = ContextPresent();
+  }
+
+  void SetOutput(TestOutput* output) {
+    DCHECK(output);
+    output->context_present_on_contruction = context_present_on_contruction_;
+    output_ = output;
+  }
+
+  BATLedgerContext* GetContext() { return context(); }
+
+  bool ContextPresent() { return context() != nullptr; }
+
+ private:
+  bool context_present_on_contruction_ = false;
+  TestOutput* output_ = nullptr;
 };
 
 const BATLedgerContext::ComponentKey TestComponent::kComponentKey;
 
 TEST_F(BATLedgerContextTest, GetComponent) {
-  auto* component = context()->Get<TestComponent>();
-  EXPECT_TRUE(component);
-  EXPECT_EQ(context()->Get<TestComponent>(), component);
+  TestComponent::TestOutput output;
+
+  {
+    BATLedgerContext context(GetTestLedgerClient());
+    auto* component = context.Get<TestComponent>();
+    EXPECT_TRUE(component);
+    EXPECT_EQ(component->GetContext(), &context);
+    EXPECT_EQ(context.Get<TestComponent>(), component);
+    component->SetOutput(&output);
+  }
+
+  EXPECT_FALSE(output.context_present_on_contruction);
+  EXPECT_FALSE(output.context_present_on_destruction);
 }
 
-TEST_F(BATLedgerContextTest, StartTask) {
-  class Task : public BATLedgerContext::Component {
+TEST_F(BATLedgerContextTest, StartJob) {
+  class Job : public BATLedgerContext::Object {
    public:
-    explicit Task(BATLedgerContext* context) : Component(context) {}
     AsyncResult<int> result() const { return resolver_.result(); }
     void Start(int n) { resolver_.Complete(std::move(n)); }
 
@@ -77,7 +111,7 @@ TEST_F(BATLedgerContextTest, StartTask) {
   };
 
   int value = 0;
-  context()->StartTask<Task>(100).Then(
+  context()->StartJob<Job>(100).Then(
       base::BindLambdaForTesting([&value](const int& v) { value = v; }));
 
   task_environment()->RunUntilIdle();

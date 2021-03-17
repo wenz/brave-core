@@ -43,6 +43,14 @@ class AsyncResult {
                                                      std::move(listener)));
   }
 
+  template <typename U>
+  AsyncResult<U> Then(base::OnceCallback<U(const T&)> map_complete) {
+    typename AsyncResult<U>::Resolver resolver;
+    Then(base::BindOnce(ThenCompleteCallback<U>, resolver,
+                        std::move(map_complete)));
+    return resolver.result();
+  }
+
   class Resolver {
    public:
     Resolver() {}
@@ -75,6 +83,13 @@ class AsyncResult {
   void Complete(T&& value) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(SetCompleteInTask, store_, std::move(value)));
+  }
+
+  template <typename U>
+  static void ThenCompleteCallback(typename AsyncResult<U>::Resolver resolver,
+                                   base::OnceCallback<U(const T&)> map_complete,
+                                   const T& value) {
+    resolver.Complete(std::move(map_complete).Run(value));
   }
 
   static void AddListenerInTask(std::shared_ptr<Store> store,
