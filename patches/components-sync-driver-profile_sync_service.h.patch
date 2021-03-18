@@ -1,8 +1,8 @@
 diff --git a/components/sync/driver/profile_sync_service.h b/components/sync/driver/profile_sync_service.h
-index 7933f8882a375b69e52623f48d200d8bd0624e49..069ea10a2a6375f9d17a01658ccca6b49c38c554 100644
+index f914eac83acdb69fe6f15864e0f1c20f91006b90..332a6477d10c4394302a04b16930c17819e5cb12 100644
 --- a/components/sync/driver/profile_sync_service.h
 +++ b/components/sync/driver/profile_sync_service.h
-@@ -246,6 +246,7 @@ class ProfileSyncService : public SyncService,
+@@ -249,6 +249,7 @@ class ProfileSyncService : public SyncService,
  
    SyncClient* GetSyncClientForTest();
  
