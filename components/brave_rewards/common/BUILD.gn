@@ -1,8 +1,12 @@
 source_set("common") {
   sources = [
+    "features.cc",
+    "features.h",
     "pref_names.cc",
     "pref_names.h",
     "url_constants.cc",
-    "url_constants.h"
+    "url_constants.h",
   ]
+
+  deps = [ "//base" ]
 }
