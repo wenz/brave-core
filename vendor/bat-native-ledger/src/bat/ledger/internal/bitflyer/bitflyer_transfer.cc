@@ -51,7 +51,6 @@ void BitflyerTransfer::OnCreateTransaction(
   }
 
   if (result != type::Result::LEDGER_OK) {
-    // TODO(nejczdovc): add retry logic to all errors in this function
     callback(type::Result::LEDGER_ERROR, "");
     return;
   }
