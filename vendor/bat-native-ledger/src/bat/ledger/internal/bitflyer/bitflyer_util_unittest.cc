@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "bat/ledger/global_constants.h"
 #include "bat/ledger/internal/bitflyer/bitflyer_util.h"
+#include "bat/ledger/internal/common/random_util.h"
 #include "bat/ledger/internal/ledger_client_mock.h"
 #include "bat/ledger/internal/ledger_impl_mock.h"
 #include "bat/ledger/internal/state/state_keys.h"
@@ -163,14 +164,16 @@ TEST_F(BitflyerUtilTest, GetWallet) {
   ASSERT_EQ(result->status, type::WalletStatus::VERIFIED);
 }
 
-TEST_F(BitflyerUtilTest, GenerateRandomString) {
+TEST_F(BitflyerUtilTest, GenerateRandomHexString) {
   // string for testing
-  auto result = bitflyer::GenerateRandomString(true);
+  ledger::is_testing = true;
+  auto result = ledger::util::GenerateRandomHexString();
   ASSERT_EQ(result, "123456789");
 
   // random string
+  ledger::is_testing = false;
   ledger::_environment = type::Environment::STAGING;
-  result = bitflyer::GenerateRandomString(false);
+  result = ledger::util::GenerateRandomHexString();
   ASSERT_EQ(result.length(), 64u);
 }
 

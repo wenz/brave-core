@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/base64url.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
@@ -14,10 +13,10 @@
 #include "base/strings/stringprintf.h"
 #include "bat/ledger/global_constants.h"
 #include "bat/ledger/internal/bitflyer/bitflyer_util.h"
+#include "bat/ledger/internal/common/random_util.h"
 #include "bat/ledger/internal/ledger_impl.h"
 #include "bat/ledger/internal/state/state_keys.h"
 #include "crypto/random.h"
-#include "crypto/sha2.h"
 
 namespace ledger {
 namespace bitflyer {
@@ -57,15 +56,7 @@ std::string GetAuthorizeUrl(const std::string& state,
   const std::string url = GetUrl();
 
   // Calculate PKCE code challenge
-  const std::string hashed_code_verifier =
-      crypto::SHA256HashString(code_verifier);
-  std::string code_challenge;
-  base::Base64UrlEncode(hashed_code_verifier,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &code_challenge);
-  base::ReplaceChars(code_challenge, "+", "-", &code_challenge);
-  base::ReplaceChars(code_challenge, "/", "_", &code_challenge);
-
+  std::string code_challenge = util::GeneratePKCECodeChallenge(code_verifier);
   return base::StringPrintf(
       "%s/ex/OAuth/authorize"
       "?client_id=%s"
@@ -219,17 +210,6 @@ bool SetWallet(LedgerImpl* ledger, type::ExternalWalletPtr wallet) {
   BLOG_IF(0, !success, "Can't encrypt Bitflyer wallet");
 
   return success;
-}
-
-std::string GenerateRandomString(bool testing) {
-  if (testing) {
-    return "123456789";
-  }
-
-  const size_t kLength = 32;
-  uint8_t bytes[kLength];
-  crypto::RandBytes(bytes, sizeof(bytes));
-  return base::HexEncode(bytes, sizeof(bytes));
 }
 
 std::string GetAccountUrl() {

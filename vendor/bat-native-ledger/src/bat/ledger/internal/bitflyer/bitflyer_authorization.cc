@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "bat/ledger/global_constants.h"
 #include "bat/ledger/internal/bitflyer/bitflyer_util.h"
+#include "bat/ledger/internal/common/random_util.h"
 #include "bat/ledger/internal/ledger_impl.h"
 #include "bat/ledger/internal/logging/event_log_keys.h"
 #include "crypto/sha2.h"
@@ -49,7 +50,7 @@ void BitflyerAuthorization::Authorize(
   const auto current_one_time = bitflyer_wallet->one_time_string;
 
   // we need to generate new string as soon as authorization is triggered
-  bitflyer_wallet->one_time_string = GenerateRandomString(ledger::is_testing);
+  bitflyer_wallet->one_time_string = util::GenerateRandomHexString();
   const bool success = ledger_->bitflyer()->SetWallet(bitflyer_wallet->Clone());
 
   if (!success) {
