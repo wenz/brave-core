@@ -60,13 +60,15 @@ class PostOauth {
 
   void Request(const std::string& external_account_id,
                const std::string& code,
+               const std::string& code_verifier,
                PostOauthCallback callback);
 
  private:
   std::string GetUrl();
 
   std::string GeneratePayload(const std::string& external_account_id,
-                              const std::string& code);
+                              const std::string& code,
+                              const std::string& code_verifier);
 
   type::Result CheckStatusCode(const int status_code);
 

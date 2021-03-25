@@ -6,15 +6,18 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/base64url.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "bat/ledger/global_constants.h"
 #include "bat/ledger/internal/bitflyer/bitflyer_util.h"
 #include "bat/ledger/internal/ledger_impl.h"
 #include "bat/ledger/internal/state/state_keys.h"
 #include "crypto/random.h"
+#include "crypto/sha2.h"
 
 namespace ledger {
 namespace bitflyer {
@@ -48,9 +51,20 @@ std::string GetACAddress() {
              : kACAddressStaging;
 }
 
-std::string GetAuthorizeUrl(const std::string& state) {
+std::string GetAuthorizeUrl(const std::string& state,
+                            const std::string& code_verifier) {
   const std::string id = GetClientId();
   const std::string url = GetUrl();
+
+  // Calculate PKCE code challenge
+  const std::string hashed_code_verifier =
+      crypto::SHA256HashString(code_verifier);
+  std::string code_challenge;
+  base::Base64UrlEncode(hashed_code_verifier,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &code_challenge);
+  base::ReplaceChars(code_challenge, "+", "-", &code_challenge);
+  base::ReplaceChars(code_challenge, "/", "_", &code_challenge);
 
   return base::StringPrintf(
       "%s/ex/OAuth/authorize"
@@ -61,8 +75,10 @@ std::string GetAuthorizeUrl(const std::string& state) {
       "withdraw_to_deposit_id"
       "&redirect_uri=rewards://bitflyer/authorization"
       "&state=%s"
-      "&response_type=code",
-      url.c_str(), id.c_str(), state.c_str());
+      "&response_type=code"
+      "&code_challenge_method=S256"
+      "&code_challenge=%s",
+      url.c_str(), id.c_str(), state.c_str(), code_challenge.c_str());
 }
 
 std::string GetAddUrl() {
@@ -110,6 +126,11 @@ type::ExternalWalletPtr GetWallet(LedgerImpl* ledger) {
   auto* one_time_string = dictionary->FindStringKey("one_time_string");
   if (one_time_string) {
     wallet->one_time_string = *one_time_string;
+  }
+
+  auto* code_verifier = dictionary->FindStringKey("code_verifier");
+  if (code_verifier) {
+    wallet->code_verifier = *code_verifier;
   }
 
   auto status = dictionary->FindIntKey("status");
@@ -181,6 +202,7 @@ bool SetWallet(LedgerImpl* ledger, type::ExternalWalletPtr wallet) {
   new_wallet.SetStringKey("address", wallet->address);
   new_wallet.SetIntKey("status", static_cast<int>(wallet->status));
   new_wallet.SetStringKey("one_time_string", wallet->one_time_string);
+  new_wallet.SetStringKey("code_verifier", wallet->code_verifier);
   new_wallet.SetStringKey("user_name", wallet->user_name);
   new_wallet.SetStringKey("verify_url", wallet->verify_url);
   new_wallet.SetStringKey("add_url", wallet->add_url);
@@ -238,9 +260,12 @@ type::ExternalWalletPtr GenerateLinks(type::ExternalWalletPtr wallet) {
     }
   }
 
-  wallet->verify_url = GetAuthorizeUrl(wallet->one_time_string);
+  const std::string auth_url =
+      GetAuthorizeUrl(wallet->one_time_string, wallet->code_verifier);
+
+  wallet->verify_url = auth_url;
   wallet->account_url = GetAccountUrl();
-  wallet->login_url = GetAuthorizeUrl(wallet->one_time_string);
+  wallet->login_url = auth_url;
 
   return wallet;
 }

@@ -79,25 +79,30 @@ TEST_F(BitflyerUtilTest, GetFeeAddress) {
 TEST_F(BitflyerUtilTest, GetAuthorizeUrl) {
   // production
   ledger::_environment = type::Environment::PRODUCTION;
-  std::string result = bitflyer::GetAuthorizeUrl("rdfdsfsdfsdf");
+  std::string result =
+      bitflyer::GetAuthorizeUrl("my-state", "my-code-verifier");
   ASSERT_EQ(result,
             "https://bitflyer.jp/ex/OAuth/authorize"
             "?client_id=" BITFLYER_CLIENT_ID
             "&scope=assets create_deposit_id withdraw_to_deposit_id"
             "&redirect_uri=rewards://bitflyer/authorization"
-            "&state=rdfdsfsdfsdf"
-            "&response_type=code");
+            "&state=my-state"
+            "&response_type=code"
+            "&code_challenge_method=S256"
+            "&code_challenge=5Cxs3JXozcwTeteCIu4BcTieAhEIqjn643F10PxPD_w");
 
   // staging
   ledger::_environment = type::Environment::STAGING;
-  result = bitflyer::GetAuthorizeUrl("rdfdsfsdfsdf");
+  result = bitflyer::GetAuthorizeUrl("my-state", "my-code-verifier");
   ASSERT_EQ(result, BITFLYER_STAGING_URL
             "/ex/OAuth/authorize"
             "?client_id=" BITFLYER_STAGING_CLIENT_ID
             "&scope=assets create_deposit_id withdraw_to_deposit_id"
             "&redirect_uri=rewards://bitflyer/authorization"
-            "&state=rdfdsfsdfsdf"
-            "&response_type=code");
+            "&state=my-state"
+            "&response_type=code"
+            "&code_challenge_method=S256"
+            "&code_challenge=5Cxs3JXozcwTeteCIu4BcTieAhEIqjn643F10PxPD_w");
 }
 
 TEST_F(BitflyerUtilTest, GetAddUrl) {
@@ -138,6 +143,7 @@ TEST_F(BitflyerUtilTest, GetWallet) {
     "fees": {},
     "login_url": "https://sandbox.bitflyer.jp/authorize/4c2b665ca060d",
     "one_time_string": "1F747AE0A708E47ED7E650BF1856B5A4EF7E36833BDB1158A108F8",
+    "code_verifier": "1234567890",
     "status": 2,
     "token": "4c80232r219c30cdf112208890a32c7e00",
     "user_name": "test",
@@ -184,7 +190,10 @@ TEST_F(BitflyerUtilTest, GenerateLinks) {
             "?client_id=" BITFLYER_STAGING_CLIENT_ID
             "&scope=assets create_deposit_id withdraw_to_deposit_id"
             "&redirect_uri=rewards://bitflyer/authorization"
-            "&state=&response_type=code");
+            "&state="
+            "&response_type=code"
+            "&code_challenge_method=S256"
+            "&code_challenge=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU");
   ASSERT_EQ(result->account_url, BITFLYER_STAGING_URL "/ex/Home?login=1");
 
   // Connected
@@ -197,7 +206,10 @@ TEST_F(BitflyerUtilTest, GenerateLinks) {
             "?client_id=" BITFLYER_STAGING_CLIENT_ID
             "&scope=assets create_deposit_id withdraw_to_deposit_id"
             "&redirect_uri=rewards://bitflyer/authorization"
-            "&state=&response_type=code");
+            "&state="
+            "&response_type=code"
+            "&code_challenge_method=S256"
+            "&code_challenge=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU");
   ASSERT_EQ(result->account_url, BITFLYER_STAGING_URL "/ex/Home?login=1");
 
   // Verified
@@ -210,7 +222,10 @@ TEST_F(BitflyerUtilTest, GenerateLinks) {
             "?client_id=" BITFLYER_STAGING_CLIENT_ID
             "&scope=assets create_deposit_id withdraw_to_deposit_id"
             "&redirect_uri=rewards://bitflyer/authorization"
-            "&state=&response_type=code");
+            "&state="
+            "&response_type=code"
+            "&code_challenge_method=S256"
+            "&code_challenge=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU");
   ASSERT_EQ(result->account_url, BITFLYER_STAGING_URL "/ex/Home?login=1");
 
   // Disconnected Non-Verified
@@ -223,7 +238,10 @@ TEST_F(BitflyerUtilTest, GenerateLinks) {
             "?client_id=" BITFLYER_STAGING_CLIENT_ID
             "&scope=assets create_deposit_id withdraw_to_deposit_id"
             "&redirect_uri=rewards://bitflyer/authorization"
-            "&state=&response_type=code");
+            "&state="
+            "&response_type=code"
+            "&code_challenge_method=S256"
+            "&code_challenge=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU");
   ASSERT_EQ(result->account_url, BITFLYER_STAGING_URL "/ex/Home?login=1");
 
   // Disconnected Verified
@@ -236,7 +254,10 @@ TEST_F(BitflyerUtilTest, GenerateLinks) {
             "?client_id=" BITFLYER_STAGING_CLIENT_ID
             "&scope=assets create_deposit_id withdraw_to_deposit_id"
             "&redirect_uri=rewards://bitflyer/authorization"
-            "&state=&response_type=code");
+            "&state="
+            "&response_type=code"
+            "&code_challenge_method=S256"
+            "&code_challenge=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU");
   ASSERT_EQ(result->account_url, BITFLYER_STAGING_URL "/ex/Home?login=1");
 
   // Pending
@@ -249,7 +270,10 @@ TEST_F(BitflyerUtilTest, GenerateLinks) {
             "?client_id=" BITFLYER_STAGING_CLIENT_ID
             "&scope=assets create_deposit_id withdraw_to_deposit_id"
             "&redirect_uri=rewards://bitflyer/authorization"
-            "&state=&response_type=code");
+            "&state="
+            "&response_type=code"
+            "&code_challenge_method=S256"
+            "&code_challenge=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU");
   ASSERT_EQ(result->account_url, BITFLYER_STAGING_URL "/ex/Home?login=1");
 }
 

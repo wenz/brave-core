@@ -106,6 +106,13 @@ void BitflyerAuthorization::Authorize(
     return;
   }
 
+  const std::string code_verifier = bitflyer_wallet->code_verifier;
+  if (code_verifier.empty()) {
+    BLOG(0, "Code verifier is empty");
+    callback(type::Result::LEDGER_ERROR, {});
+    return;
+  }
+
   const std::string hashed_payment_id =
       crypto::SHA256HashString(wallet->payment_id);
   const std::string external_account_id =
@@ -115,7 +122,7 @@ void BitflyerAuthorization::Authorize(
                                 _2, _3, _4, callback);
 
   bitflyer_server_->post_oauth()->Request(external_account_id, code,
-                                          url_callback);
+                                          code_verifier, url_callback);
 }
 
 void BitflyerAuthorization::OnAuthorize(

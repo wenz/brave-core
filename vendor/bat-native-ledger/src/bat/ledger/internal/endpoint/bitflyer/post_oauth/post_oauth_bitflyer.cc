@@ -7,7 +7,6 @@
 
 #include <utility>
 
-#include "base/base64url.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -15,7 +14,6 @@
 #include "bat/ledger/internal/bitflyer/bitflyer_util.h"
 #include "bat/ledger/internal/endpoint/bitflyer/bitflyer_utils.h"
 #include "bat/ledger/internal/ledger_impl.h"
-#include "crypto/sha2.h"
 #include "net/http/http_status_code.h"
 
 using std::placeholders::_1;
@@ -35,7 +33,8 @@ std::string PostOauth::GetUrl() {
 }
 
 std::string PostOauth::GeneratePayload(const std::string& external_account_id,
-                                       const std::string& code) {
+                                       const std::string& code,
+                                       const std::string& code_verifier) {
   const std::string client_id = ledger::bitflyer::GetClientId();
   const std::string client_secret = GetClientSecret();
   const std::string request_id = base::GenerateGUID();
@@ -43,6 +42,7 @@ std::string PostOauth::GeneratePayload(const std::string& external_account_id,
   base::DictionaryValue dict;
   dict.SetStringKey("grant_type", "code");
   dict.SetStringKey("code", code);
+  dict.SetStringKey("code_verifier", code_verifier);
   dict.SetStringKey("client_id", client_id);
   dict.SetStringKey("client_secret", client_secret);
   dict.SetIntKey("expires_in", 259002);
@@ -50,19 +50,6 @@ std::string PostOauth::GeneratePayload(const std::string& external_account_id,
   dict.SetStringKey("request_id", request_id);
   dict.SetStringKey("redirect_uri", "rewards://bitflyer/authorization");
   dict.SetBoolKey("request_deposit_id", true);
-
-  // Always send PKCE code verifier and challenge
-  const std::string code_verifier =
-      ledger::bitflyer::GenerateRandomString(ledger::is_testing);
-  const std::string hashed_code_verifier =
-      crypto::SHA256HashString(code_verifier);
-  std::string code_challenge;
-  base::Base64UrlEncode(hashed_code_verifier,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &code_challenge);
-  dict.SetStringKey("code_verifier", code_verifier);
-  dict.SetStringKey("code_challenge_method", "S256");
-  dict.SetStringKey("code_challenge", code_challenge);
 
   std::string payload;
   base::JSONWriter::Write(dict, &payload);
@@ -128,12 +115,13 @@ type::Result PostOauth::ParseBody(const std::string& body,
 
 void PostOauth::Request(const std::string& external_account_id,
                         const std::string& code,
+                        const std::string& code_verifier,
                         PostOauthCallback callback) {
   auto url_callback = std::bind(&PostOauth::OnRequest, this, _1, callback);
 
   auto request = type::UrlRequest::New();
   request->url = GetUrl();
-  request->content = GeneratePayload(external_account_id, code);
+  request->content = GeneratePayload(external_account_id, code, code_verifier);
   request->headers = RequestAuthorization();
   request->content_type = "application/json";
   request->method = type::UrlMethod::POST;

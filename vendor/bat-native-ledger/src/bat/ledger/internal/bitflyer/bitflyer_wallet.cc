@@ -34,6 +34,10 @@ void BitflyerWallet::Generate(ledger::ResultCallback callback) {
     wallet->one_time_string = GenerateRandomString(ledger::is_testing);
   }
 
+  if (wallet->code_verifier.empty()) {
+    wallet->code_verifier = GenerateRandomString(ledger::is_testing);
+  }
+
   if (wallet->token.empty() &&
       (wallet->status == type::WalletStatus::PENDING ||
        wallet->status == type::WalletStatus::CONNECTED)) {
