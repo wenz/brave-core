@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "bat/ledger/internal/endpoint/bitflyer/get_balance/get_balance_bitflyer.h"
-#include "bat/ledger/internal/endpoint/bitflyer/post_claim/post_claim_bitflyer.h"
 #include "bat/ledger/internal/endpoint/bitflyer/post_oauth/post_oauth_bitflyer.h"
 #include "bat/ledger/internal/endpoint/bitflyer/post_transaction/post_transaction_bitflyer.h"
 #include "bat/ledger/ledger.h"
@@ -26,15 +25,12 @@ class BitflyerServer {
 
   bitflyer::GetBalance* get_balance() const;
 
-  bitflyer::PostClaimBitflyer* post_claim() const;
-
   bitflyer::PostOauth* post_oauth() const;
 
   bitflyer::PostTransaction* post_transaction() const;
 
  private:
   std::unique_ptr<bitflyer::GetBalance> get_balance_;
-  std::unique_ptr<bitflyer::PostClaimBitflyer> post_claim_;
   std::unique_ptr<bitflyer::PostOauth> post_oauth_;
   std::unique_ptr<bitflyer::PostTransaction> post_transaction_;
 };

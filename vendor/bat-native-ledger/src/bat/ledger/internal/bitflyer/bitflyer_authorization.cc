@@ -24,7 +24,8 @@ namespace bitflyer {
 
 BitflyerAuthorization::BitflyerAuthorization(LedgerImpl* ledger)
     : ledger_(ledger),
-      bitflyer_server_(std::make_unique<endpoint::BitflyerServer>(ledger)) {}
+      bitflyer_server_(std::make_unique<endpoint::BitflyerServer>(ledger)),
+      promotion_server_(std::make_unique<endpoint::PromotionServer>(ledger)) {}
 
 BitflyerAuthorization::~BitflyerAuthorization() = default;
 
@@ -157,7 +158,7 @@ void BitflyerAuthorization::OnAuthorize(
   auto url_callback = std::bind(&BitflyerAuthorization::OnClaimWallet, this, _1,
                                 token, address, linking_info, callback);
 
-  bitflyer_server_->post_claim()->Request(linking_info, url_callback);
+  promotion_server_->post_claim_bitflyer()->Request(linking_info, url_callback);
 }
 
 void BitflyerAuthorization::OnClaimWallet(

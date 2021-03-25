@@ -3,8 +3,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef BRAVE_VENDOR_BAT_NATIVE_LEDGER_SRC_BAT_LEDGER_INTERNAL_ENDPOINT_BITFLYER_POST_CLAIM_POST_CLAIM_BITFLYER_H_
-#define BRAVE_VENDOR_BAT_NATIVE_LEDGER_SRC_BAT_LEDGER_INTERNAL_ENDPOINT_BITFLYER_POST_CLAIM_POST_CLAIM_BITFLYER_H_
+#ifndef BRAVE_VENDOR_BAT_NATIVE_LEDGER_SRC_BAT_LEDGER_INTERNAL_ENDPOINT_PROMOTION_POST_CLAIM_BITFLYER_POST_CLAIM_BITFLYER_H_
+#define BRAVE_VENDOR_BAT_NATIVE_LEDGER_SRC_BAT_LEDGER_INTERNAL_ENDPOINT_PROMOTION_POST_CLAIM_BITFLYER_POST_CLAIM_BITFLYER_H_
 
 #include <string>
 
@@ -33,7 +33,7 @@ namespace ledger {
 class LedgerImpl;
 
 namespace endpoint {
-namespace bitflyer {
+namespace promotion {
 
 using PostClaimBitflyerCallback =
     std::function<void(const type::Result result)>;
@@ -59,8 +59,8 @@ class PostClaimBitflyer {
   LedgerImpl* ledger_;  // NOT OWNED
 };
 
-}  // namespace bitflyer
+}  // namespace promotion
 }  // namespace endpoint
 }  // namespace ledger
 
-#endif  // BRAVE_VENDOR_BAT_NATIVE_LEDGER_SRC_BAT_LEDGER_INTERNAL_ENDPOINT_BITFLYER_POST_CLAIM_POST_CLAIM_BITFLYER_H_
+#endif  // BRAVE_VENDOR_BAT_NATIVE_LEDGER_SRC_BAT_LEDGER_INTERNAL_ENDPOINT_PROMOTION_POST_CLAIM_BITFLYER_POST_CLAIM_BITFLYER_H_

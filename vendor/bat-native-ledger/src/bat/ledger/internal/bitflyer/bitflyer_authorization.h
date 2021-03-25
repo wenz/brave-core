@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "bat/ledger/internal/endpoint/bitflyer/bitflyer_server.h"
+#include "bat/ledger/internal/endpoint/promotion/promotion_server.h"
 #include "bat/ledger/ledger.h"
 
 namespace ledger {
@@ -42,6 +43,7 @@ class BitflyerAuthorization {
 
   LedgerImpl* ledger_;  // NOT OWNED
   std::unique_ptr<endpoint::BitflyerServer> bitflyer_server_;
+  std::unique_ptr<endpoint::PromotionServer> promotion_server_;
 };
 
 }  // namespace bitflyer

@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "bat/ledger/internal/endpoint/bitflyer/post_claim/post_claim_bitflyer.h"
+#include "bat/ledger/internal/endpoint/promotion/post_claim_bitflyer/post_claim_bitflyer.h"
 
 #include <memory>
 #include <string>
@@ -24,7 +24,7 @@ using ::testing::Invoke;
 
 namespace ledger {
 namespace endpoint {
-namespace bitflyer {
+namespace promotion {
 
 class PostClaimBitflyerTest : public testing::Test {
  private:
@@ -154,6 +154,6 @@ TEST_F(PostClaimBitflyerTest, ServerErrorRandom) {
                   });
 }
 
-}  // namespace bitflyer
+}  // namespace promotion
 }  // namespace endpoint
 }  // namespace ledger
