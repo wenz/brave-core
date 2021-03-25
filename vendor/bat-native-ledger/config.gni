@@ -5,3 +5,11 @@ declare_args() {
   bitflyer_staging_client_secret = ""
   bitflyer_staging_url = ""
 }
+
+if (is_official_build) {
+  assert(bitflyer_client_id != "")
+  assert(bitflyer_client_secret != "")
+  assert(bitflyer_staging_client_id != "")
+  assert(bitflyer_staging_client_secret != "")
+  assert(bitflyer_staging_url != "")
+}
