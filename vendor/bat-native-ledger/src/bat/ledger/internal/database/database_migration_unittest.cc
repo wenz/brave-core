@@ -730,4 +730,16 @@ TEST_F(LedgerDatabaseMigrationTest, Migration_30_BitflyerRegion) {
   EXPECT_EQ(CountTableRows("unblinded_tokens_bap"), 1);
 }
 
+TEST_F(LedgerDatabaseMigrationTest, Migration_31) {
+  InitializeDatabaseAtVersion(30);
+  InitializeLedger();
+
+  sql::Statement sql(GetDB()->GetUniqueStatement(R"sql(
+      SELECT processor FROM pending_contribution
+  )sql"));
+
+  EXPECT_TRUE(sql.Step());
+  EXPECT_EQ(sql.ColumnInt64(0), 0);
+}
+
 }  // namespace ledger
