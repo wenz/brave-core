@@ -35,6 +35,7 @@ BraveDeviceInfo::BraveDeviceInfo(
                  pulse_interval,
                  send_tab_to_self_receiving_enabled,
                  sharing_info,
+                 /*paask_info=*/base::nullopt,
                  fcm_registration_token,
                  interested_data_types),
       is_self_delete_supported_(is_self_delete_supported) {}
