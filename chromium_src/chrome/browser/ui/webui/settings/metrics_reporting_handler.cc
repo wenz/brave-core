@@ -9,6 +9,7 @@
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "content/public/browser/web_ui.h"
 
-#define GOOGLE_CHROME_BUILD
+#undef BUILDFLAG_INTERNAL_GOOGLE_CHROME_BRANDING
+#define BUILDFLAG_INTERNAL_GOOGLE_CHROME_BRANDING() (1)
 #include "../../../../../../../chrome/browser/ui/webui/settings/metrics_reporting_handler.cc"
-#undef GOOGLE_CHROME_BUILD
+#undef BUILDFLAG_INTERNAL_GOOGLE_CHROME_BRANDING

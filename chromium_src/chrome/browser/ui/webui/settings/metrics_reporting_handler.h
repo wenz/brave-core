@@ -6,10 +6,12 @@
 #ifndef BRAVE_CHROMIUM_SRC_CHROME_BROWSER_UI_WEBUI_SETTINGS_METRICS_REPORTING_HANDLER_H_
 #define BRAVE_CHROMIUM_SRC_CHROME_BROWSER_UI_WEBUI_SETTINGS_METRICS_REPORTING_HANDLER_H_
 
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
-#define GOOGLE_CHROME_BUILD
+#undef BUILDFLAG_INTERNAL_GOOGLE_CHROME_BRANDING
+#define BUILDFLAG_INTERNAL_GOOGLE_CHROME_BRANDING() (1)
 #include "../../../../../../../chrome/browser/ui/webui/settings/metrics_reporting_handler.h"
-#undef GOOGLE_CHROME_BUILD
+#undef BUILDFLAG_INTERNAL_GOOGLE_CHROME_BRANDING
 
 #endif  // BRAVE_CHROMIUM_SRC_CHROME_BROWSER_UI_WEBUI_SETTINGS_METRICS_REPORTING_HANDLER_H_
