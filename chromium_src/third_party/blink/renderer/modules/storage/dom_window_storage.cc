@@ -113,7 +113,7 @@ EphemeralStorageNamespaces* EphemeralStorageNamespaces::From(
   if (!webview || !webview->Client())
     return nullptr;
   String session_storage_id = StringToSessionStorageId(
-      String::FromUTF8(webview->Client()->GetSessionStorageNamespaceId()),
+      String::FromUTF8(webview->GetSessionStorageNamespaceId()),
       kSessionStorageSuffix);
 
   auto* security_origin =
