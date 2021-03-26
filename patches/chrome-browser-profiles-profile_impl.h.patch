@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/profiles/profile_impl.h b/chrome/browser/profiles/profile_impl.h
-index d21cd79384ec19fb41850e19d60d60dab633a484..adb7aa882fad79eea60fbbadfc8a5a85af80091f 100644
+index b47edc9f8c7030d33f0b8bfe77ce2f58fc889136..1862964eda4acbbecfe516d669d12ca8f2f12eab 100644
 --- a/chrome/browser/profiles/profile_impl.h
 +++ b/chrome/browser/profiles/profile_impl.h
-@@ -165,6 +165,7 @@ class ProfileImpl : public Profile {
+@@ -163,6 +163,7 @@ class ProfileImpl : public Profile {
    void OnLogin() override;
    void InitChromeOSPreferences() override;
  #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
