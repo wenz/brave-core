@@ -212,7 +212,7 @@ Config.prototype.buildArgs = function () {
     brave_version_minor: version_parts[1],
     brave_version_build: version_parts[2],
     chrome_version_string: this.chromeVersion,
-    chrome_version_major: chrome_version_parts[0],
+    //chrome_version_major: chrome_version_parts[0],
     brave_sync_endpoint: this.braveSyncEndpoint,
     safebrowsing_api_endpoint: this.safeBrowsingApiEndpoint,
     brave_variations_server_url: this.braveVariationsServerUrl,
