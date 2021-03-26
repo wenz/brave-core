@@ -118,8 +118,7 @@ ads::DBCommandResponsePtr RunDBTransactionOnTaskRunner(
     self.userModelRetryCount = 1;
 
     databaseQueue = base::CreateSequencedTaskRunner(
-        {base::ThreadPool(), base::MayBlock(),
-         base::TaskPriority::USER_VISIBLE,
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
     // Add notifications for standard app foreground/background

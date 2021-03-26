@@ -81,7 +81,7 @@
     // Create worker thread in which importer runs.
     // In Chromium, this is created with `base::Thread("import_thread")`
     import_thread_ = base::CreateSequencedTaskRunner(
-        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   }
   return self;

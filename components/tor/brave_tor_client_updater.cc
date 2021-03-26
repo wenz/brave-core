@@ -114,8 +114,7 @@ BraveTorClientUpdater::BraveTorClientUpdater(
     PrefService* local_state,
     const base::FilePath& user_data_dir)
     : BraveComponent(component_delegate),
-      task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock()})),
+      task_runner_(base::CreateSequencedTaskRunner({base::MayBlock()})),
       registered_(false),
       local_state_(local_state),
       user_data_dir_(user_data_dir),

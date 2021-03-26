@@ -169,7 +169,7 @@ void BraveBookmarksExportObserver::OnExportFinished(Result result) {
   __weak BraveBookmarksExporter* weakSelf = self;
   base::PostTask(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
       base::BindOnce(start_export, weakSelf, filePath, bookmarks, listener));
 }

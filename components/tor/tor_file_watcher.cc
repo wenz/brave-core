@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 
@@ -21,8 +22,8 @@ namespace tor {
 
 namespace {
 
-constexpr base::TaskTraits kWatchTaskTraits = {
-    base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT};
+constexpr base::TaskTraits kWatchTaskTraits = {base::MayBlock(),
+                                               base::TaskPriority::BEST_EFFORT};
 
 #if defined(OS_WIN)
 constexpr char kControlPortMinTmpl[] = "PORT=1.1.1.1:1\r\n";

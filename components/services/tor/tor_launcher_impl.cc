@@ -99,8 +99,7 @@ void TorLauncherImpl::Cleanup() {
 #endif
 #if defined(OS_MAC)
     base::PostTask(
-        FROM_HERE,
-        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&base::EnsureProcessTerminated, Passed(&tor_process_)));
 #else
     base::EnsureProcessTerminated(std::move(tor_process_));

@@ -299,8 +299,7 @@ RewardsServiceImpl::RewardsServiceImpl(Profile* profile)
 #endif
       bat_ledger_client_receiver_(new bat_ledger::LedgerClientMojoBridge(this)),
       file_task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::USER_VISIBLE,
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       diagnostic_log_path_(profile_->GetPath().Append(kDiagnosticLogPath)),
       ledger_state_path_(profile_->GetPath().Append(kLedger_state)),

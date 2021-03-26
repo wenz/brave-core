@@ -125,8 +125,7 @@ BraveReferralsService::BraveReferralsService(PrefService* pref_service,
                                              const std::string& api_key,
                                              const std::string& platform)
     : initialized_(false),
-      task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock()})),
+      task_runner_(base::CreateSequencedTaskRunner({base::MayBlock()})),
       pref_service_(pref_service),
       api_key_(api_key),
       platform_(platform),

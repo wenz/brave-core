@@ -482,7 +482,7 @@ void BinanceService::OnRevokeToken(RevokeTokenCallback callback,
 base::SequencedTaskRunner* BinanceService::io_task_runner() {
   if (!io_task_runner_) {
     io_task_runner_ = base::CreateSequencedTaskRunner(
-        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   }
   return io_task_runner_.get();

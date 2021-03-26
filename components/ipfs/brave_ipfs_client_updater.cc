@@ -26,8 +26,7 @@ BraveIpfsClientUpdater::BraveIpfsClientUpdater(
     BraveComponent::Delegate* delegate,
     const base::FilePath& user_data_dir)
     : BraveComponent(delegate),
-      task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock()})),
+      task_runner_(base::CreateSequencedTaskRunner({base::MayBlock()})),
       registered_(false),
       user_data_dir_(user_data_dir),
       weak_ptr_factory_(this) {}

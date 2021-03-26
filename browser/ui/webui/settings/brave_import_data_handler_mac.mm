@@ -144,11 +144,11 @@ void BraveImportDataHandler::StartImport(
     // Start import if Brave has full disk access permission.
     // If not, show dialog that has infos about that permission.
     base::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+        FROM_HERE, {base::MayBlock()},
         base::BindOnce(&HasProperDiskAccessPermission, imported_items),
         base::BindOnce(&BraveImportDataHandler::OnGetDiskAccessPermission,
-                       weak_factory_.GetWeakPtr(),
-                       source_profile, imported_items));
+                       weak_factory_.GetWeakPtr(), source_profile,
+                       imported_items));
     return;
   }
 

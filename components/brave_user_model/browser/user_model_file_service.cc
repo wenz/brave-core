@@ -141,11 +141,11 @@ void UserModelFileService::OnComponentReady(
     const std::string& component_id,
     const base::FilePath& install_dir,
     const std::string& manifest) {
-  base::PostTaskAndReplyWithResult(FROM_HERE,
-      { base::ThreadPool(), base::MayBlock() },
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&GetManifest, install_dir.Append(kManifestFile)),
       base::BindOnce(&UserModelFileService::OnGetManifest,
-          weak_factory_.GetWeakPtr(), install_dir));
+                     weak_factory_.GetWeakPtr(), install_dir));
 }
 
 void UserModelFileService::OnGetManifest(

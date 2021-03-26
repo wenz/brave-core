@@ -189,8 +189,7 @@ ledger::type::DBCommandResponsePtr RunDBTransactionOnTaskRunner(
     }
 
     databaseQueue = base::CreateSequencedTaskRunner(
-        {base::ThreadPool(), base::MayBlock(),
-         base::TaskPriority::USER_VISIBLE,
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
     const auto* dbPath = [self rewardsDatabasePath].UTF8String;

@@ -195,7 +195,7 @@ base::Optional<base::Value> AdBlockBaseService::HiddenClassIdSelectors(
 
 void AdBlockBaseService::GetDATFileData(const base::FilePath& dat_file_path) {
   base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&brave_component_updater::LoadDATFileData<adblock::Engine>,
                      dat_file_path),
       base::BindOnce(&AdBlockBaseService::OnGetDATFileData,

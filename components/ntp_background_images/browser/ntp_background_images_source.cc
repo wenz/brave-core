@@ -99,11 +99,10 @@ void NTPBackgroundImagesSource::GetImageFile(
     const base::FilePath& image_file_path,
     GotDataCallback callback) {
   base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&ReadFileToString, image_file_path),
       base::BindOnce(&NTPBackgroundImagesSource::OnGotImageFile,
-                     weak_factory_.GetWeakPtr(),
-                     std::move(callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void NTPBackgroundImagesSource::OnGotImageFile(

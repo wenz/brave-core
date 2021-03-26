@@ -157,7 +157,7 @@ NamedThirdPartyRegistry::~NamedThirdPartyRegistry() = default;
 
 void NamedThirdPartyRegistry::InitializeDefault() {
   base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&ParseFromResource, IDR_THIRD_PARTY_ENTITIES),
       base::BindOnce(&NamedThirdPartyRegistry::UpdateMappings,
                      weak_factory_.GetWeakPtr()));

@@ -74,7 +74,7 @@ void BraveExternalProcessImporterHost::LaunchExtensionsImport() {
       kChromeExtensionsPreferencesFile);
   base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&GetChromeExtensionsList, pref_file),
       base::BindOnce(

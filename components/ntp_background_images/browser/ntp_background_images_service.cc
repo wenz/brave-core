@@ -337,7 +337,7 @@ void NTPBackgroundImagesService::OnMappingTableComponentReady(
   }
 
   base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&GetMappingTableData, installed_dir),
       base::BindOnce(&NTPBackgroundImagesService::OnGetMappingTableData,
                      weak_factory_.GetWeakPtr()));
@@ -433,7 +433,7 @@ void NTPBackgroundImagesService::OnComponentReady(
                                              : ": NTP SI Component is ready");
 
   base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&HandleComponentData, installed_dir),
       base::BindOnce(&NTPBackgroundImagesService::OnGetComponentJsonData,
                      weak_factory_.GetWeakPtr(),

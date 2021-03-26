@@ -165,8 +165,7 @@ void TorLauncherFactory::GetTorLog(GetLogCallback callback) {
   base::FilePath tor_log_path = config_.tor_data_path.AppendASCII("tor.log");
   scoped_refptr<base::SequencedTaskRunner> file_task_runner(
       base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::BEST_EFFORT,
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
   base::PostTaskAndReplyWithResult(
       file_task_runner.get(), FROM_HERE,

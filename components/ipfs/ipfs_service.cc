@@ -94,8 +94,7 @@ IpfsService::IpfsService(content::BrowserContext* context,
       ipfs_client_updater_(ipfs_client_updater),
       channel_(channel),
       file_task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::BEST_EFFORT,
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       ipfs_p3a(this, context),
       weak_factory_(this) {

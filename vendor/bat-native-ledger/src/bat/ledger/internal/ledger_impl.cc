@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "bat/ledger/global_constants.h"
 #include "bat/ledger/internal/common/security_util.h"
@@ -53,7 +54,7 @@ LedgerImpl::LedgerImpl(ledger::LedgerClient* client)
   }
 
   task_runner_ = base::CreateSequencedTaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
   sku_ = sku::SKUFactory::Create(

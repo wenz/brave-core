@@ -67,7 +67,7 @@ SpeedreaderRewriterService::~SpeedreaderRewriterService() {
 void SpeedreaderRewriterService::OnWhitelistReady(const base::FilePath& path) {
   VLOG(2) << "Whitelist ready at " << path;
   base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(
           &brave_component_updater::LoadDATFileData<speedreader::SpeedReader>,
           path),
@@ -77,7 +77,7 @@ void SpeedreaderRewriterService::OnWhitelistReady(const base::FilePath& path) {
 
 void SpeedreaderRewriterService::OnStylesheetReady(const base::FilePath& path) {
   base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&GetDistilledPageStylesheet, path),
       base::BindOnce(&SpeedreaderRewriterService::OnLoadStylesheet,
                      weak_factory_.GetWeakPtr()));
