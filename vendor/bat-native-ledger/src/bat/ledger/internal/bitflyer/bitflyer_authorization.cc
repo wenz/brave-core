@@ -48,9 +48,11 @@ void BitflyerAuthorization::Authorize(
   }
 
   const auto current_one_time = bitflyer_wallet->one_time_string;
+  const auto current_code_verifier = bitflyer_wallet->code_verifier;
 
-  // we need to generate new string as soon as authorization is triggered
+  // We need to generate new strings as soon as authorization is triggered
   bitflyer_wallet->one_time_string = util::GenerateRandomHexString();
+  bitflyer_wallet->code_verifier = util::GeneratePKCECodeVerifier();
   const bool success = ledger_->bitflyer()->SetWallet(bitflyer_wallet->Clone());
 
   if (!success) {
@@ -107,8 +109,7 @@ void BitflyerAuthorization::Authorize(
     return;
   }
 
-  const std::string code_verifier = bitflyer_wallet->code_verifier;
-  if (code_verifier.empty()) {
+  if (current_code_verifier.empty()) {
     BLOG(0, "Code verifier is empty");
     callback(type::Result::LEDGER_ERROR, {});
     return;
@@ -123,7 +124,7 @@ void BitflyerAuthorization::Authorize(
                                 _2, _3, _4, callback);
 
   bitflyer_server_->post_oauth()->Request(external_account_id, code,
-                                          code_verifier, url_callback);
+                                          current_code_verifier, url_callback);
 }
 
 void BitflyerAuthorization::OnAuthorize(
