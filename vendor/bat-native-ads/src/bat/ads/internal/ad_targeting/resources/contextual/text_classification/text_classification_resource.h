@@ -24,9 +24,7 @@ class TextClassification : public Resource<ml::pipeline::TextProcessing*> {
 
   bool IsInitialized() const override;
 
-  void LoadForLocale(const std::string& locale);
-
-  void LoadForId(const std::string& locale);
+  void Load();
 
   ml::pipeline::TextProcessing* get() const override;
 

@@ -20,8 +20,8 @@
 #include "bat/ads/internal/ad_serving/ad_notifications/ad_notification_serving.h"
 #include "bat/ads/internal/ad_serving/ad_targeting/geographic/subdivision/subdivision_targeting.h"
 #include "bat/ads/internal/ad_targeting/ad_targeting.h"
-#include "bat/ads/internal/ad_targeting/data_types/behavioral/purchase_intent/purchase_intent_components.h"
-#include "bat/ads/internal/ad_targeting/data_types/contextual/text_classification/text_classification_components.h"
+#include "bat/ads/internal/ad_targeting/data_types/behavioral/purchase_intent/country_components.h"
+#include "bat/ads/internal/ad_targeting/data_types/contextual/text_classification/language_components.h"
 #include "bat/ads/internal/ad_targeting/processors/behavioral/bandits/epsilon_greedy_bandit_processor.h"
 #include "bat/ads/internal/ad_targeting/processors/behavioral/purchase_intent/purchase_intent_processor.h"
 #include "bat/ads/internal/ad_targeting/processors/contextual/text_classification/text_classification_processor.h"
@@ -122,8 +122,8 @@ void AdsImpl::Shutdown(ShutdownCallback callback) {
 
 void AdsImpl::ChangeLocale(const std::string& locale) {
   subdivision_targeting_->MaybeFetchForLocale(locale);
-  text_classification_resource_->LoadForLocale(locale);
-  purchase_intent_resource_->LoadForLocale(locale);
+  text_classification_resource_->Load();
+  purchase_intent_resource_->Load();
 }
 
 void AdsImpl::OnAdsSubdivisionTargetingCodeHasChanged() {
@@ -267,12 +267,12 @@ void AdsImpl::OnWalletUpdated(const std::string& id, const std::string& seed) {
 }
 
 void AdsImpl::OnUserModelUpdated(const std::string& id) {
-  if (kTextClassificationComponentIds.find(id) !=
-      kTextClassificationComponentIds.end()) {
-    text_classification_resource_->LoadForId(id);
-  } else if (kPurchaseIntentComponentIds.find(id) !=
-             kPurchaseIntentComponentIds.end()) {
-    purchase_intent_resource_->LoadForId(id);
+  if (kComponentLanguageIds.find(id) !=
+      kComponentLanguageIds.end()) {
+    text_classification_resource_->Load();
+  } else if (kComponentCountryIds.find(id) !=
+             kComponentCountryIds.end()) {
+    purchase_intent_resource_->Load();
   } else {
     BLOG(0, "Unknown " << id << " user model");
   }

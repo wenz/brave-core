@@ -86,13 +86,13 @@ class BatAdsAdTargetingTest
     bandit_processor_ = std::make_unique<processor::EpsilonGreedyBandit>();
 
     purchase_intent_resource_ = std::make_unique<resource::PurchaseIntent>();
-    purchase_intent_resource_->LoadForLocale("en-US");
+    purchase_intent_resource_->Load();
     purchase_intent_processor_ = std::make_unique<processor::PurchaseIntent>(
         purchase_intent_resource_.get());
 
     text_classification_resource_ =
         std::make_unique<resource::TextClassification>();
-    text_classification_resource_->LoadForLocale("en-US");
+    text_classification_resource_->Load();
     text_classification_processor_ =
         std::make_unique<processor::TextClassification>(
             text_classification_resource_.get());

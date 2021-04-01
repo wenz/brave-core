@@ -57,6 +57,9 @@ class UserModelFileService : public BraveComponent {
       const base::FilePath& install_dir,
       const std::string& json);
 
+  // TODO(Moritz Haller): Support model versions
+  //   ? change to vector and find by (id, version)
+  //   ? keep as map and index by (id, version)
   std::map<std::string, UserModelInfo> user_models_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<UserModelFileService> weak_factory_{this};

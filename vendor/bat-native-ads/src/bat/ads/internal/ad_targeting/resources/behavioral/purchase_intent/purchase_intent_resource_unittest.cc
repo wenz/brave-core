@@ -13,10 +13,6 @@
 namespace ads {
 namespace ad_targeting {
 
-namespace {
-const char kUnitedStatesCountryCode[] = "kkjipiepeooghlclkedllogndmohhnhi";
-}  // namespace
-
 class BatAdsPurchaseIntentResourceTest : public UnitTestBase {
  protected:
   BatAdsPurchaseIntentResourceTest() = default;
@@ -24,48 +20,12 @@ class BatAdsPurchaseIntentResourceTest : public UnitTestBase {
   ~BatAdsPurchaseIntentResourceTest() override = default;
 };
 
-TEST_F(BatAdsPurchaseIntentResourceTest, DoNotLoadForInvalidId) {
+TEST_F(BatAdsPurchaseIntentResourceTest, Load) {
   // Arrange
   resource::PurchaseIntent resource;
 
   // Act
-  resource.LoadForId("invalid");
-
-  // Assert
-  const bool is_initialized = resource.IsInitialized();
-  EXPECT_FALSE(is_initialized);
-}
-
-TEST_F(BatAdsPurchaseIntentResourceTest, LoadForId) {
-  // Arrange
-  resource::PurchaseIntent resource;
-
-  // Act
-  resource.LoadForId(kUnitedStatesCountryCode);
-
-  // Assert
-  const bool is_initialized = resource.IsInitialized();
-  EXPECT_TRUE(is_initialized);
-}
-
-TEST_F(BatAdsPurchaseIntentResourceTest, DoNotLoadForInvalidLocale) {
-  // Arrange
-  resource::PurchaseIntent resource;
-
-  // Act
-  resource.LoadForLocale("XX-XX");
-
-  // Assert
-  const bool is_initialized = resource.IsInitialized();
-  EXPECT_FALSE(is_initialized);
-}
-
-TEST_F(BatAdsPurchaseIntentResourceTest, LoadForLocale) {
-  // Arrange
-  resource::PurchaseIntent resource;
-
-  // Act
-  resource.LoadForLocale("en-US");
+  resource.Load();
 
   // Assert
   const bool is_initialized = resource.IsInitialized();

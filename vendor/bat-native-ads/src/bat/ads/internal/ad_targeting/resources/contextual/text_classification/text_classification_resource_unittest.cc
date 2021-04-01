@@ -13,10 +13,6 @@
 namespace ads {
 namespace ad_targeting {
 
-namespace {
-const char kEnLanguageCode[] = "emgmepnebbddgnkhfmhdhmjifkglkamo";
-}  // namespace
-
 class BatAdsTextClassificationResourceTest : public UnitTestBase {
  protected:
   BatAdsTextClassificationResourceTest() = default;
@@ -24,48 +20,12 @@ class BatAdsTextClassificationResourceTest : public UnitTestBase {
   ~BatAdsTextClassificationResourceTest() override = default;
 };
 
-TEST_F(BatAdsTextClassificationResourceTest, DoNotLoadForInvalidId) {
+TEST_F(BatAdsTextClassificationResourceTest, Load) {
   // Arrange
   resource::TextClassification resource;
 
   // Act
-  resource.LoadForId("invalid");
-
-  // Assert
-  const bool is_initialized = resource.IsInitialized();
-  EXPECT_FALSE(is_initialized);
-}
-
-TEST_F(BatAdsTextClassificationResourceTest, LoadForId) {
-  // Arrange
-  resource::TextClassification resource;
-
-  // Act
-  resource.LoadForId(kEnLanguageCode);
-
-  // Assert
-  const bool is_initialized = resource.IsInitialized();
-  EXPECT_TRUE(is_initialized);
-}
-
-TEST_F(BatAdsTextClassificationResourceTest, DoNotLoadForInvalidLocale) {
-  // Arrange
-  resource::TextClassification resource;
-
-  // Act
-  resource.LoadForLocale("XX-XX");
-
-  // Assert
-  const bool is_initialized = resource.IsInitialized();
-  EXPECT_FALSE(is_initialized);
-}
-
-TEST_F(BatAdsTextClassificationResourceTest, LoadForLocale) {
-  // Arrange
-  resource::TextClassification resource;
-
-  // Act
-  resource.LoadForLocale("en-US");
+  resource.Load();
 
   // Assert
   const bool is_initialized = resource.IsInitialized();

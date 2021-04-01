@@ -25,9 +25,7 @@ class PurchaseIntent : public Resource<PurchaseIntentInfo> {
 
   bool IsInitialized() const override;
 
-  void LoadForLocale(const std::string& locale);
-
-  void LoadForId(const std::string& locale);
+  void Load();
 
   PurchaseIntentInfo get() const override;
 

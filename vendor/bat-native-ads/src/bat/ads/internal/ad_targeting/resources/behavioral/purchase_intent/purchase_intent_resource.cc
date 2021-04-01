@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
-#include "bat/ads/internal/ad_targeting/data_types/behavioral/purchase_intent/purchase_intent_country_codes.h"
 #include "bat/ads/internal/ads_client_helper.h"
 #include "bat/ads/internal/logging.h"
 #include "bat/ads/result.h"
@@ -19,7 +18,10 @@ namespace ad_targeting {
 namespace resource {
 
 namespace {
+
 const int kCurrentVersion = 1;
+const char kResourceId[] = "bejenkminijgplakmkmcgkhjjnkelbld";
+
 }  // namespace
 
 PurchaseIntent::PurchaseIntent() = default;
@@ -30,39 +32,31 @@ bool PurchaseIntent::IsInitialized() const {
   return is_initialized_;
 }
 
-void PurchaseIntent::LoadForLocale(const std::string& locale) {
-  const std::string country_code = brave_l10n::GetCountryCode(locale);
-
-  const auto iter = kPurchaseIntentCountryCodes.find(country_code);
-  if (iter == kPurchaseIntentCountryCodes.end()) {
-    BLOG(1, country_code << " does not support purchase intent");
-    is_initialized_ = false;
-    return;
-  }
-
-  LoadForId(iter->second);
-}
-
-void PurchaseIntent::LoadForId(const std::string& id) {
-  AdsClientHelper::Get()->LoadUserModelForId(id, [=](const Result result,
-                                                     const std::string& json) {
+void PurchaseIntent::Load() {
+  AdsClientHelper::Get()->LoadUserModelForId(
+    // TODO(Moritz Haller): Migration path?
+      kResourceId, [=](const Result result, const std::string& json) {
     if (result != SUCCESS) {
-      BLOG(1, "Failed to load " << id << " purchase intent resource");
+      BLOG(1, "Failed to load " << kResourceId
+          << " purchase intent resource");
       is_initialized_ = false;
       return;
     }
 
-    BLOG(1, "Successfully loaded " << id << " purchase intent resource");
+    BLOG(1, "Successfully loaded " << kResourceId
+        << " purchase intent resource");
 
     if (!FromJson(json)) {
-      BLOG(1, "Failed to initialize " << id << " purchase intent resource");
+      BLOG(1, "Failed to initialize " << kResourceId
+          << " purchase intent resource");
       is_initialized_ = false;
       return;
     }
 
     is_initialized_ = true;
 
-    BLOG(1, "Successfully initialized " << id << " purchase intent resource");
+    BLOG(1, "Successfully initialized " << kResourceId
+        << " purchase intent resource");
   });
 }
 

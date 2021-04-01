@@ -26,10 +26,9 @@ class BatAdsTextClassificationModelTest : public UnitTestBase {
 };
 
 TEST_F(BatAdsTextClassificationModelTest,
-       GetUntargetedSegmentForUnsupportedLocale) {
+       GetUntargetedSegmentForUninitializedResource) {
   // Arrange
   resource::TextClassification resource;
-  resource.LoadForLocale("XX-XX");
 
   const std::string text = "The quick brown fox jumps over the lazy dog";
   processor::TextClassification processor(&resource);
@@ -48,7 +47,7 @@ TEST_F(BatAdsTextClassificationModelTest,
 TEST_F(BatAdsTextClassificationModelTest, GetUntargetedSegmentForEmptyText) {
   // Arrange
   resource::TextClassification resource;
-  resource.LoadForLocale("en-US");
+  resource.Load();
 
   const std::string text = "";
   processor::TextClassification processor(&resource);
@@ -68,7 +67,7 @@ TEST_F(BatAdsTextClassificationModelTest,
        GetSegmentsForPreviouslyClassifiedText) {
   // Arrange
   resource::TextClassification resource;
-  resource.LoadForLocale("en-US");
+  resource.Load();
 
   const std::string text = "Some content about technology & computing";
   processor::TextClassification processor(&resource);
@@ -90,7 +89,7 @@ TEST_F(BatAdsTextClassificationModelTest,
        GetSegmentsForPreviouslyClassifiedTexts) {
   // Arrange
   resource::TextClassification resource;
-  resource.LoadForLocale("en-US");
+  resource.Load();
 
   const std::vector<std::string> texts = {
       "Some content about cooking food", "Some content about finance & banking",
@@ -117,7 +116,7 @@ TEST_F(BatAdsTextClassificationModelTest,
        GetUntargetedSegmentIfNeverProcessed) {
   // Arrange
   resource::TextClassification resource;
-  resource.LoadForLocale("en-US");
+  resource.Load();
 
   // Act
   model::TextClassification model;

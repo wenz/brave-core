@@ -22,11 +22,9 @@ class BatAdsPurchaseIntentModelTest : public UnitTestBase {
   ~BatAdsPurchaseIntentModelTest() override = default;
 };
 
-TEST_F(BatAdsPurchaseIntentModelTest, DoNotGetSegmentsForUnsupportedLocale) {
+TEST_F(BatAdsPurchaseIntentModelTest, DoNotGetSegmentsForUnitializedResource) {
   // Arrange
   resource::PurchaseIntent resource;
-  resource.LoadForLocale("XX-XX");
-
   processor::PurchaseIntent processor(&resource);
 
   const GURL url = GURL("https://www.brave.com/test?foo=bar");
@@ -45,7 +43,7 @@ TEST_F(BatAdsPurchaseIntentModelTest, DoNotGetSegmentsForUnsupportedLocale) {
 TEST_F(BatAdsPurchaseIntentModelTest, DoNotGetSegmentsForExpiredSignals) {
   // Arrange
   resource::PurchaseIntent resource;
-  resource.LoadForLocale("en-US");
+  resource.Load();
 
   processor::PurchaseIntent processor(&resource);
 
@@ -70,7 +68,7 @@ TEST_F(BatAdsPurchaseIntentModelTest, DoNotGetSegmentsForExpiredSignals) {
 TEST_F(BatAdsPurchaseIntentModelTest, DoNotGetSegmentsIfNeverProcessed) {
   // Arrange
   resource::PurchaseIntent resource;
-  resource.LoadForLocale("en-US");
+  resource.Load();
 
   // Act
   model::PurchaseIntent model;
@@ -86,7 +84,7 @@ TEST_F(BatAdsPurchaseIntentModelTest,
        DoNotGetSegmentsIfNeverMatchedFunnelSites) {
   // Arrange
   resource::PurchaseIntent resource;
-  resource.LoadForLocale("en-US");
+  resource.Load();
 
   processor::PurchaseIntent processor(&resource);
 
@@ -106,7 +104,7 @@ TEST_F(BatAdsPurchaseIntentModelTest,
 TEST_F(BatAdsPurchaseIntentModelTest, GetSegmentsForPreviouslyMatchedSite) {
   // Arrange
   resource::PurchaseIntent resource;
-  resource.LoadForLocale("en-US");
+  resource.Load();
 
   processor::PurchaseIntent processor(&resource);
 
@@ -132,7 +130,7 @@ TEST_F(BatAdsPurchaseIntentModelTest,
        GetSegmentsForPreviouslyMatchedSegmentKeywords) {
   // Arrange
   resource::PurchaseIntent resource;
-  resource.LoadForLocale("en-US");
+  resource.Load();
 
   processor::PurchaseIntent processor(&resource);
 
@@ -155,7 +153,7 @@ TEST_F(BatAdsPurchaseIntentModelTest,
        GetSegmentsForPreviouslyMatchedFunnelKeywords) {
   // Arrange
   resource::PurchaseIntent resource;
-  resource.LoadForLocale("en-US");
+  resource.Load();
 
   processor::PurchaseIntent processor(&resource);
 

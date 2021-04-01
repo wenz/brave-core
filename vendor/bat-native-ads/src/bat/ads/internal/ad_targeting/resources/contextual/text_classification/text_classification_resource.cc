@@ -6,7 +6,6 @@
 #include "bat/ads/internal/ad_targeting/resources/contextual/text_classification/text_classification_resource.h"
 
 #include "base/json/json_reader.h"
-#include "bat/ads/internal/ad_targeting/data_types/contextual/text_classification/text_classification_language_codes.h"
 #include "bat/ads/internal/ads_client_helper.h"
 #include "bat/ads/internal/logging.h"
 #include "bat/ads/result.h"
@@ -15,6 +14,10 @@
 namespace ads {
 namespace ad_targeting {
 namespace resource {
+
+namespace {
+const char kResourceId[] = "feibnmjhecfbjpeciancnchbmlobenjn";
+}
 
 TextClassification::TextClassification() {
   text_processing_pipeline_.reset(
@@ -28,40 +31,30 @@ bool TextClassification::IsInitialized() const {
          text_processing_pipeline_->IsInitialized();
 }
 
-void TextClassification::LoadForLocale(const std::string& locale) {
-  const std::string language_code = brave_l10n::GetLanguageCode(locale);
-
-  const auto iter = kTextClassificationLanguageCodes.find(language_code);
-  if (iter == kTextClassificationLanguageCodes.end()) {
-    BLOG(1, locale << " locale does not support text classification");
-    text_processing_pipeline_.reset(
-        ml::pipeline::TextProcessing::CreateInstance());
-    return;
-  }
-
-  LoadForId(iter->second);
-}
-
-void TextClassification::LoadForId(const std::string& id) {
-  AdsClientHelper::Get()->LoadUserModelForId(id, [=](const Result result,
-                                                     const std::string& json) {
+void TextClassification::Load() {
+  AdsClientHelper::Get()->LoadUserModelForId(
+      kResourceId, [=](const Result result, const std::string& json) {
     text_processing_pipeline_.reset(
         ml::pipeline::TextProcessing::CreateInstance());
 
     if (result != SUCCESS) {
-      BLOG(1, "Failed to load " << id << " text classification resource");
+      BLOG(1, "Failed to load " << kResourceId
+          << " text classification resource");
       return;
     }
 
-    BLOG(1, "Successfully loaded " << id << " text classification resource");
+    BLOG(1, "Successfully loaded " << kResourceId
+        << " text classification resource");
 
     if (!text_processing_pipeline_->FromJson(json)) {
-      BLOG(1, "Failed to initialize " << id << " text classification resource");
+      BLOG(1, "Failed to initialize " << kResourceId
+          << " text classification resource");
       return;
     }
 
     BLOG(1,
-         "Successfully initialized " << id << " text classification resource");
+         "Successfully initialized " << kResourceId
+            << " text classification resource");
   });
 }
 
