@@ -1,5 +1,5 @@
 diff --git a/components/permissions/BUILD.gn b/components/permissions/BUILD.gn
-index 799755985b575a7464897d0969bf383c386d267c..736acd4686d8cc47f09b5859b9ef78644c73d3c1 100644
+index 6960ec08c57fa50b6f626b07e684702f00d9bf7e..8acb8afe7020afe91ded15e7db493089cb6bd474 100644
 --- a/components/permissions/BUILD.gn
 +++ b/components/permissions/BUILD.gn
 @@ -2,6 +2,8 @@
@@ -11,7 +11,7 @@ index 799755985b575a7464897d0969bf383c386d267c..736acd4686d8cc47f09b5859b9ef7864
  source_set("permissions_common") {
    sources = [
      "features.cc",
-@@ -89,6 +91,7 @@ source_set("permissions") {
+@@ -92,6 +94,7 @@ source_set("permissions") {
      "//ui/base",
      "//url",
    ]
