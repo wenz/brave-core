@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "brave/components/speedreader/speedreader_component.h"
 #include "brave/components/speedreader/speedreader_switches.h"
 #include "components/grit/brave_components_resources.h"
@@ -77,8 +78,8 @@ SpeedreaderRewriterService::~SpeedreaderRewriterService() {
 
 void SpeedreaderRewriterService::OnWhitelistReady(const base::FilePath& path) {
   VLOG(2) << "Whitelist ready at " << path;
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(
           &brave_component_updater::LoadDATFileData<speedreader::SpeedReader>,
           path),
@@ -87,8 +88,8 @@ void SpeedreaderRewriterService::OnWhitelistReady(const base::FilePath& path) {
 }
 
 void SpeedreaderRewriterService::OnStylesheetReady(const base::FilePath& path) {
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&GetDistilledPageStylesheet, path),
       base::BindOnce(&SpeedreaderRewriterService::OnLoadStylesheet,
                      weak_factory_.GetWeakPtr()));

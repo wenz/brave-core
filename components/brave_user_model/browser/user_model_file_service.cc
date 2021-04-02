@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "brave/components/brave_user_model/browser/component_util.h"
 #include "brave/components/l10n/common/locale_util.h"
 
@@ -141,8 +142,8 @@ void UserModelFileService::OnComponentReady(
     const std::string& component_id,
     const base::FilePath& install_dir,
     const std::string& manifest) {
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&GetManifest, install_dir.Append(kManifestFile)),
       base::BindOnce(&UserModelFileService::OnGetManifest,
                      weak_factory_.GetWeakPtr(), component_id, install_dir));
