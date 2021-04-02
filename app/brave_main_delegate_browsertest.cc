@@ -76,7 +76,6 @@ IN_PROC_BROWSER_TEST_F(BraveMainDelegateBrowserTest, DisabledFeatures) {
       &features::kTabHoverCards,
       &features::kWebOTP,
       &network_time::kNetworkTimeServiceQuerying,
-      &safe_browsing::kEnhancedProtection,
       &safe_browsing::kEnhancedProtectionMessageInInterstitials,
   };
 
