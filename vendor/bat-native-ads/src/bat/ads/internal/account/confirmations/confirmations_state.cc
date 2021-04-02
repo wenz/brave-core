@@ -342,7 +342,7 @@ base::Value ConfirmationsState::GetFailedConfirmationsAsDictionary(
       base::DictionaryValue* user_data_dictionary = nullptr;
       if (user_data->GetAsDictionary(&user_data_dictionary)) {
         confirmation_dictionary.SetKey("user_data",
-                                       base::Value(user_data_dictionary));
+          base::Value(std::move(*user_data_dictionary)));
       }
     }
 
