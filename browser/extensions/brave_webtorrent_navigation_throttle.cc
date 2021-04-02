@@ -33,9 +33,8 @@ namespace extensions {
 BraveWebTorrentNavigationThrottle::BraveWebTorrentNavigationThrottle(
         content::NavigationHandle* navigation_handle) :
     content::NavigationThrottle(navigation_handle),
-    extension_registry_observer_(this),
     resume_pending_(false) {
-  extension_registry_observer_.Add(
+  extension_registry_observer_.Observe(
       ExtensionRegistry::Get(
           navigation_handle->GetWebContents()->GetBrowserContext()));
 }
