@@ -24,6 +24,7 @@
 #include "base/sequenced_task_runner.h"
 #import "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #import "base/base64.h"
 
@@ -117,8 +118,8 @@ ads::DBCommandResponsePtr RunDBTransactionOnTaskRunner(
 
     self.userModelRetryCount = 1;
 
-    databaseQueue = base::CreateSequencedTaskRunner(
-        {base::ThreadPool(), base::MayBlock(),
+    databaseQueue = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(),
          base::TaskPriority::USER_VISIBLE,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 

@@ -38,6 +38,7 @@
 #import "base/command_line.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 
 #import "RewardsLogging.h"
@@ -188,8 +189,8 @@ ledger::type::DBCommandResponsePtr RunDBTransactionOnTaskRunner(
       argv[i] = args[i].UTF8String;
     }
 
-    databaseQueue = base::CreateSequencedTaskRunner(
-        {base::ThreadPool(), base::MayBlock(),
+    databaseQueue = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(),
          base::TaskPriority::USER_VISIBLE,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 

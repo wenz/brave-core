@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/token.h"
@@ -515,8 +516,8 @@ void GeminiService::OnURLLoaderComplete(
 
 base::SequencedTaskRunner* GeminiService::io_task_runner() {
   if (!io_task_runner_) {
-    io_task_runner_ = base::CreateSequencedTaskRunner(
-        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+    io_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   }
   return io_task_runner_.get();
