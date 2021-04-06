@@ -4,6 +4,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "base/base64.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -532,6 +533,11 @@ class IpfsServiceBrowserTest : public InProcessBrowserTest {
 
     wait_for_request_.reset(new base::RunLoop);
     wait_for_request_->Run();
+  }
+
+  int WriteTestFile(const base::FilePath& file, const std::string& text) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    return base::WriteFile(file, text.c_str(), text.size());
   }
 
  private:

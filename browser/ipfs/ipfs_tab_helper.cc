@@ -26,6 +26,7 @@
 #include "brave/components/ipfs/ipfs_utils.h"
 #include "brave/components/ipfs/pref_names.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -363,6 +364,14 @@ void IPFSTabHelper::ImportTextToIpfs(const std::string& text) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void IPFSTabHelper::ImportFileToIpfs(const base::FilePath& path) {
+  DCHECK(ipfs_service_);
+  ipfs_service_->ImportFileToIpfs(
+      path,
+      base::BindOnce(&IPFSTabHelper::OnImportCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 GURL IPFSTabHelper::CreateAndCopyShareableLink(const ipfs::ImportedData& data) {
   if (data.hash.empty())
     return GURL();
@@ -402,6 +411,34 @@ void IPFSTabHelper::PushNotification(const base::string16& title,
   auto* display_service = NotificationDisplayService::GetForProfile(profile);
   display_service->Display(NotificationHandler::Type::ANNOUNCEMENT,
                            *notification, /*metadata=*/nullptr);
+}
+
+void IPFSTabHelper::FileSelected(const base::FilePath& path,
+                  int index, void* params) {
+  ImportFileToIpfs(path);
+  select_file_dialog_.reset();
+}
+
+void IPFSTabHelper::FileSelectionCanceled(void* params) {
+  select_file_dialog_.reset();
+}
+
+void IPFSTabHelper::SelectFileForImport() {
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this, std::make_unique<ChromeSelectFilePolicy>(
+                web_contents()));
+
+  if (!select_file_dialog_)
+    return;
+  Profile* profile = Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  const base::FilePath directory = profile->last_selected_directory();
+  gfx::NativeWindow parent_window = web_contents()->GetTopLevelNativeWindow();
+  ui::SelectFileDialog::FileTypeInfo file_types;
+  file_types.allowed_paths =
+      ui::SelectFileDialog::FileTypeInfo::ANY_PATH_OR_URL;
+  select_file_dialog_->SelectFile(
+      ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(), directory,
+      &file_types, 0, base::FilePath::StringType(), parent_window, NULL);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(IPFSTabHelper)
