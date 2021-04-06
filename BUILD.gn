@@ -33,7 +33,6 @@ if (!is_ios) {
     deps = [
       "common",
       "//brave/renderer",
-      "//brave/utility",
     ]
   }
 

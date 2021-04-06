@@ -224,7 +224,6 @@ test("brave_unit_tests") {
     "//brave/common",
     "//brave/components/content_settings/core/browser",
     "//brave/renderer",
-    "//brave/utility",
     "//testing/gtest",
   ]
 
