@@ -1,0 +1,18 @@
+brave_browser_download_sources = [
+  "//brave/browser/download/brave_download_item_model.cc",
+  "//brave/browser/download/brave_download_item_model.h",
+]
+
+brave_browser_download_deps = [
+  "//base",
+  "//chrome/common",
+
+  # Need for //chrome/common/safe_browsing/download_file_types.pb.h included
+  # from download_item_model.h.
+  "//chrome/common/safe_browsing:proto",
+  "//components/download/public/common:public",
+  "//components/strings:components_strings_grit",
+  "//ui/base",
+  "//ui/gfx",
+  "//url",
+]

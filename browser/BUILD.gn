@@ -113,7 +113,6 @@ source_set("browser_process") {
     "brave_stats:stats_updater",
     "browsing_data",
     "content_settings",
-    "download",
     "ephemeral_storage",
     "net",
     "ntp_background_images",

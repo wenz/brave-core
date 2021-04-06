@@ -6,7 +6,7 @@
 #ifndef BRAVE_BROWSER_DOWNLOAD_BRAVE_DOWNLOAD_ITEM_MODEL_H_
 #define BRAVE_BROWSER_DOWNLOAD_BRAVE_DOWNLOAD_ITEM_MODEL_H_
 
-#include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_ui_model.h"
 
 // The purpose of this class is to extend DonwloadItemModel's class
 // functionality by adding a method for the origin URL text and
