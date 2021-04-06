@@ -82,6 +82,7 @@ IN_PROC_BROWSER_TEST_F(BraveMainDelegateBrowserTest, DisabledFeatures) {
       &federated_learning::kFlocIdComputedEventLogging,
       &federated_learning::kFlocIdSortingLshBasedComputation,
       &kSharingQRCodeGenerator,
+      &net::features::kFirstPartySets,
       &network_time::kNetworkTimeServiceQuerying,
   };
 
