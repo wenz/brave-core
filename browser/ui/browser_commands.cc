@@ -6,6 +6,7 @@
 #include "brave/browser/ui/browser_commands.h"
 
 #include "base/files/file_path.h"
+#include "brave/components/brave_wallet/common/buildflags/buildflags.h"
 #include "brave/components/speedreader/buildflags.h"
 #include "brave/components/tor/buildflags/buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -89,6 +90,16 @@ void ToggleSpeedreader(Browser* browser) {
     }
   }
 #endif  // BUILDFLAG(ENABLE_SPEEDREADER)
+}
+
+void ToggleWallet(Browser* browser) {
+#if BUILDFLAG(WALLET_ENABLED)
+  extensions::ComponentLoader* loader = service->component_loader();
+      static_cast<extensions::BraveComponentLoader*>(loader)->
+          AddRewardsExtension();
+
+
+#endif  // BUILDFLAGWALLET_ENABLED()
 }
 
 }  // namespace brave

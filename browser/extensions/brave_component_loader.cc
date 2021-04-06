@@ -159,6 +159,18 @@ void BraveComponentLoader::CheckRewardsStatus() {
 #endif
 
 #if BUILDFLAG(BRAVE_WALLET_ENABLED)
+
+void BraveComponentLoader::AddWalletExtension() {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (!Exists(brave_wallet_extension_id)) {
+    base::FilePath path(FILE_PATH_LITERAL(""));
+    path =
+        path.Append(FILE_PATH_LITERAL("brave_wallet"));
+    Add(IDR_BRAVE_WALLET, path);
+  }
+}
+
 void BraveComponentLoader::AddEthereumRemoteClientExtension() {
   AddExtension(ethereum_remote_client_extension_id,
                ethereum_remote_client_extension_name,

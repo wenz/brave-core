@@ -42,6 +42,9 @@ class BraveComponentLoader : public ComponentLoader {
   void AddRewardsExtension();
 #endif
 #if BUILDFLAG(BRAVE_WALLET_ENABLED)
+  // New native wallet Desktop (UI only)
+  void AddWalletExtension();
+  // Old wallet (fork of MetaMask)
   void AddEthereumRemoteClientExtension();
   void AddEthereumRemoteClientExtensionOnStartup();
 #endif

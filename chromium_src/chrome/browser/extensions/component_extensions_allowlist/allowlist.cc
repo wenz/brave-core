@@ -26,6 +26,7 @@ namespace extensions {
       brave_extension_id,
       brave_rewards_extension_id,
 #if BUILDFLAG(BRAVE_WALLET_ENABLED)
+      brave_wallet_extnesion_id,
       ethereum_remote_client_extension_id,
 #endif
       brave_webtorrent_extension_id
@@ -44,6 +45,7 @@ namespace extensions {
       // Please keep the list in alphabetical order.
       case IDR_BRAVE_EXTENSION:
       case IDR_BRAVE_REWARDS:
+      case IDR_BRAVE_WALLET:
       case IDR_BRAVE_WEBTORRENT:
         return true;
     }

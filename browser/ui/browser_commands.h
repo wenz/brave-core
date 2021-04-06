@@ -15,6 +15,7 @@ void NewTorConnectionForSite(Browser*);
 void AddNewProfile();
 void OpenGuestProfile();
 void ToggleSpeedreader(Browser* browser);
+void ToggleWallet(Browser* browser);
 
 }  // namespace brave
 
