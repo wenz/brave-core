@@ -22,6 +22,8 @@ import { PaymentKindSwitch } from './payment_kind_switch'
 import { TipAmountSelector } from './tip_amount_selector'
 import { BatString } from './bat_string'
 import { TermsOfService } from './terms_of_service'
+import { CustomTipAmount } from './custom_tip_amount'
+import { CustomAmountInput } from './custom_amount_input'
 import { NewTabLink } from '../../shared/components/new_tab_link'
 import { PaperAirplaneIcon } from './icons/paper_airplane_icon'
 
@@ -106,6 +108,15 @@ export function OneTimeTipForm () {
     return getDefaultTipAmount(rewardsParameters, publisherInfo, balanceInfo)
   })
 
+  const [showCustomInput, setShowCustomInput] = React.useState(false)
+
+  const resetTip = () => {
+    setTipAmount(getDefaultTipAmount(
+      rewardsParameters,
+      publisherInfo,
+      balanceInfo))
+  }
+
   React.useEffect(() => {
     return host.addListener((state) => {
       setBalanceInfo(state.balanceInfo)
@@ -117,11 +128,8 @@ export function OneTimeTipForm () {
 
   // Select a default tip amount
   React.useEffect(() => {
-    if (tipAmount === 0) {
-      setTipAmount(getDefaultTipAmount(
-        rewardsParameters,
-        publisherInfo,
-        balanceInfo))
+    if (tipAmount === 0 && !showCustomInput) {
+      resetTip()
     }
   }, [rewardsParameters, publisherInfo, balanceInfo])
 
@@ -143,6 +151,11 @@ export function OneTimeTipForm () {
     exchangeAmount: formatExchangeAmount(value, rewardsParameters.rate)
   }))
 
+  const onShowCustomInputClick = () => {
+    setTipAmount(0)
+    setShowCustomInput(true)
+  }
+
   return (
     <style.root>
       <style.main>
@@ -151,13 +164,38 @@ export function OneTimeTipForm () {
           currentValue={paymentKind}
           onChange={setPaymentKind}
         />
-        <style.amounts>
-          <TipAmountSelector
-            options={tipAmountOptions}
-            selectedValue={tipAmount}
-            onSelect={setTipAmount}
-          />
-        </style.amounts>
+        {
+          showCustomInput ?
+            <style.customInput>
+              <CustomAmountInput
+                amount={tipAmount}
+                onAmountChange={setTipAmount}
+              />
+            </style.customInput> :
+          tipAmount > 0 && !tipOptions.includes(tipAmount) ?
+            <style.customAmount>
+              <CustomTipAmount
+                text={'You are about to tip'}
+                amount={tipAmount}
+                currency={<BatString />}
+                exchangeAmount={
+                  formatExchangeAmount(tipAmount, rewardsParameters.rate)}
+                onReset={resetTip}
+              />
+            </style.customAmount> :
+            <style.amounts>
+              <TipAmountSelector
+                options={tipAmountOptions}
+                selectedValue={tipAmount}
+                onSelect={setTipAmount}
+              />
+              <style.customAmountButton>
+                <button onClick={onShowCustomInputClick}>
+                  Custom tip amount
+                </button>
+              </style.customAmountButton>
+            </style.amounts>
+        }
       </style.main>
       <style.footer>
         <TermsOfService />
@@ -168,6 +206,10 @@ export function OneTimeTipForm () {
                 <EmoteSadIcon />
               </style.sadIcon> {getInsufficientFundsContent(locale, onlyAnon)}
             </style.addFunds> :
+          showCustomInput ?
+            <FormSubmitButton onClick={() => setShowCustomInput(false)}>
+              Continue
+            </FormSubmitButton> :
             <FormSubmitButton onClick={processTip}>
               <PaperAirplaneIcon /> {getString('sendDonation')}
             </FormSubmitButton>

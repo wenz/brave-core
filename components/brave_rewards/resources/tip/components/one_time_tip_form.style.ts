@@ -18,11 +18,35 @@ export const main = styled.div`
   max-width: 450px;
 `
 
+export const customAmount = styled.div`
+  margin-top: 24px;
+`
+
+export const customInput = styled.div`
+
+`
+
 export const amounts = styled.div`
   padding-top: 24px;
   margin-top: 11px;
   border-top: 1px solid rgba(174, 177, 194, 0.5);
 }
+`
+
+export const customAmountButton = styled.div`
+  margin-top: 34px;
+  text-align: center;
+
+  button {
+    border: 0;
+    background: none;
+    padding: 0;
+    font-size: 13px;
+    line-height: 20px;
+    font-weight: 600;
+    color: var(--brave-color-brandBatInteracting);
+    cursor: pointer;
+  }
 `
 
 export const footer = styled.div``
