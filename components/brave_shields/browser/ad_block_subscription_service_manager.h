@@ -75,6 +75,8 @@ class AdBlockSubscriptionServiceManager {
 
   CustomSubscriptionDownloadManager* download_manager() { return download_manager_.get(); }
 
+  void OnNewListDownloaded(const SubscriptionIdentifier& id);
+
  private:
   friend class ::AdBlockServiceTest;
   bool Init();
@@ -84,6 +86,8 @@ class AdBlockSubscriptionServiceManager {
   void ClearFilterListPrefs(const SubscriptionIdentifier& uuid);
 
   void OnSystemProfileCreated(Profile* profile, Profile::CreateStatus status);
+
+  void OnNewListDownloadedOnTaskRunner(const SubscriptionIdentifier& id);
 
   brave_component_updater::BraveComponent::Delegate* delegate_;  // NOT OWNED
   bool initialized_;

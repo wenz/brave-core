@@ -49,6 +49,8 @@ class AdBlockSubscriptionService : public AdBlockBaseService {
   void SetEnabled(bool enabled);
   //std::string GetTitle() const { return title_; }
 
+  void OnSuccessfulDownload();
+
  protected:
   bool Init() override;
   void OnComponentReady(const std::string& component_id,
@@ -63,6 +65,7 @@ class AdBlockSubscriptionService : public AdBlockBaseService {
   static void SetComponentIdAndBase64PublicKeyForTest(
       const std::string& component_id,
       const std::string& component_base64_public_key);
+  void ReloadFilters();
 
   std::string list_contents_;
 

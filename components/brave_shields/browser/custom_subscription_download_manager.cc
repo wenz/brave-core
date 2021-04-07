@@ -10,10 +10,17 @@
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/post_task.h"
+#include "brave/browser/brave_browser_process_impl.h"
+#include "brave/components/brave_shields/browser/ad_block_constants.h"
+#include "brave/components/brave_shields/browser/ad_block_service.h"
+#include "brave/components/brave_shields/browser/ad_block_service_helper.h"
 #include "build/build_config.h"
 #include "components/download/public/background_service/download_service.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "storage/browser/blob/blob_data_handle.h"
+#include "storage/browser/blob/write_blob_to_file.h"
 
 namespace brave_shields {
 
@@ -145,6 +152,10 @@ void CustomSubscriptionDownloadManager::OnDownloadSucceeded(
       "BraveShields.CustomSubscriptionDownloadManager.DownloadSucceeded",
       true);
 
+  background_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&CustomSubscriptionDownloadManager::EnsureDirExists,
+              base::Unretained(this), download_url, std::move(data_handle)));
 }
 
 void CustomSubscriptionDownloadManager::OnDownloadFailed(const std::string& guid) {
@@ -155,5 +166,48 @@ void CustomSubscriptionDownloadManager::OnDownloadFailed(const std::string& guid
       false);
 }
 
+void CustomSubscriptionDownloadManager::EnsureDirExists(const GURL download_url, std::unique_ptr<storage::BlobDataHandle> data_handle) {
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+
+  base::FilePath destination_dir = DirForCustomSubscription(download_url);
+  if (!base::CreateDirectory(destination_dir)) {
+    // TODO handle failure gracefully, cleanup original file
+    /*RecordCustomSubscriptionDownloadStatus(
+        CustomSubscriptionDownloadStatus::kFailedUnzipDirectoryCreation);*/
+    DCHECK(false);
+  }
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CustomSubscriptionDownloadManager::WriteBlobOnIOThread,
+                     base::Unretained(this), download_url, std::move(data_handle), destination_dir));
+}
+
+void CustomSubscriptionDownloadManager::WriteBlobOnIOThread(
+        const GURL& download_url,
+        std::unique_ptr<storage::BlobDataHandle> data_handle,
+        const base::FilePath destination_dir) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  base::FilePath list_text_dest = destination_dir.AppendASCII(kCustomSubscriptionListText);
+
+  WriteBlobToFile(std::move(data_handle), list_text_dest, true, base::nullopt, base::BindRepeating(&CustomSubscriptionDownloadManager::WriteResultCallback, ui_weak_ptr_factory_.GetWeakPtr(), download_url));
+}
+
+void CustomSubscriptionDownloadManager::WriteResultCallback(const GURL& download_url, storage::mojom::WriteBlobToFileResult result) {
+  if (result != storage::mojom::WriteBlobToFileResult::kSuccess) {
+    // TODO gracefully handle failure here
+    DCHECK(false);
+  }
+
+  // TODO if doing any validation of the downloaded list, do it here
+  //        or extracting info from the headers
+
+  // TODO if saving the list to a DAT, do it here
+  //        optionally, make sure the list has new contents (via checksum) before doing this.
+
+  //RecordCustomSubscriptionDownloadStatus(CustomSubscriptionDownloadStatus::kSuccess);
+
+  g_brave_browser_process->ad_block_service()->subscription_service_manager()->OnNewListDownloaded(download_url);
+}
 
 }  // namespace brave_shields

@@ -11,6 +11,8 @@ source_set("browser") {
   sources = [
     "ad_block_base_service.cc",
     "ad_block_base_service.h",
+    "ad_block_constants.cc",
+    "ad_block_constants.h",
     "ad_block_custom_filters_service.cc",
     "ad_block_custom_filters_service.h",
     "ad_block_regional_service.cc",

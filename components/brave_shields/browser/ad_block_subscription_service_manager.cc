@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
@@ -87,7 +88,7 @@ void AdBlockSubscriptionServiceManager::CreateSubscription(const GURL list_url) 
 
   // TODO - start download manager if it has not yet been started (first list created)
 
-  // TODO start download
+  download_manager_->StartDownload(list_url, true);
 }
 
 std::vector<FilterListSubscriptionInfo> AdBlockSubscriptionServiceManager::GetSubscriptions() const {
@@ -121,6 +122,10 @@ void AdBlockSubscriptionServiceManager::DeleteSubscription(const SubscriptionIde
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&AdBlockSubscriptionServiceManager::ClearFilterListPrefs,
                      base::Unretained(this), id));
+
+  g_brave_browser_process->ad_block_service()->GetTaskRunner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively), DirForCustomSubscription(id)));
 }
 
 void AdBlockSubscriptionServiceManager::RefreshSubscription(const SubscriptionIdentifier& id) {
@@ -309,6 +314,26 @@ AdBlockSubscriptionServiceManager::HiddenClassIdSelectors(
   }
 
   return first_value;
+}
+
+void AdBlockSubscriptionServiceManager::OnNewListDownloaded(const SubscriptionIdentifier& id) {
+  g_brave_browser_process->ad_block_service()->GetTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AdBlockSubscriptionServiceManager::OnNewListDownloadedOnTaskRunner,
+                     base::Unretained(this), id));
+}
+
+void AdBlockSubscriptionServiceManager::OnNewListDownloadedOnTaskRunner(const SubscriptionIdentifier& id) {
+  DCHECK(g_brave_browser_process->ad_block_service()->GetTaskRunner()->RunsTasksInCurrentSequence());
+  auto it = subscription_services_.find(id);
+  // TODO error handling?
+  DCHECK(it != subscription_services_.end());
+  it->second->OnSuccessfulDownload();
+
+  base::PostTask(
+      FROM_HERE, {content::BrowserThread::UI},
+      base::BindOnce(&AdBlockSubscriptionServiceManager::UpdateFilterListPrefs,
+                     base::Unretained(this), id, it->second->GetInfo()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
