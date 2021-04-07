@@ -5,6 +5,10 @@
 
 #include "brave/components/permissions/permission_lifetime_utils.h"
 
+#include <algorithm>
+#include <string>
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
@@ -12,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/grit/brave_components_strings.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_request.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace permissions {
@@ -71,6 +76,31 @@ std::vector<PermissionLifetimeOption> CreatePermissionLifetimeOptions() {
   }
 
   return options;
+}
+
+bool ShouldShowLifetimeOptions(PermissionPrompt::Delegate* delegate) {
+  if (!base::FeatureList::IsEnabled(features::kPermissionLifetime)) {
+    return false;
+  }
+
+  const bool all_requests_support_lifetime = std::all_of(
+      delegate->Requests().begin(), delegate->Requests().end(),
+      [](const auto& request) { return request->SupportsLifetime(); });
+  return all_requests_support_lifetime;
+}
+
+void SetRequestsLifetime(const std::vector<PermissionLifetimeOption>& options,
+                         int index,
+                         PermissionPrompt::Delegate* delegate) {
+  DCHECK(base::FeatureList::IsEnabled(features::kPermissionLifetime));
+  DCHECK(!options.empty());
+  DCHECK(index >= 0 && static_cast<size_t>(index) < options.size());
+  const auto& lifetime = options[index].lifetime;
+  DLOG(INFO) << "Set permission lifetime "
+             << (lifetime ? lifetime->InSeconds() : -1);
+  for (auto* request : delegate->Requests()) {
+    request->SetLifetime(lifetime);
+  }
 }
 
 }  // namespace permissions
