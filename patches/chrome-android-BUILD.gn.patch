@@ -8,7 +8,7 @@ index b067a3f7af514bc48632365427ba8ecffa4885df..dadadab8dd95e47bc228053bd1335cbd
    ]
 +  deps += brave_chrome_app_java_resources_deps sources += brave_java_resources resource_overlay = true
  }
- 
+
  if (enable_vr) {
 @@ -551,6 +552,7 @@ android_library("chrome_java") {
    ]
@@ -42,3 +42,11 @@ index b067a3f7af514bc48632365427ba8ecffa4885df..dadadab8dd95e47bc228053bd1335cbd
        if (_is_monochrome) {
          deps += [ "//android_webview:locale_pak_assets" ]
          if (webview_includes_weblayer && !_is_bundle_module) {
+@@ -2286,6 +2291,7 @@ android_library("base_module_java") {
+     "//components/payments/content/android:service_java",
+     "//third_party/androidx:androidx_browser_browser_java",
+   ]
++  sources += brave_java_base_module_sources deps += brave_java_base_module_deps
+ 
+   # More deps for DFMs.
+   if (dfmify_dev_ui) {
