@@ -386,8 +386,14 @@ source_set("browser_process") {
       deps += [ "brave_ads" ]
     } else {
       sources += [
+        "brave_rewards/checkout_dialog.cc",
+        "brave_rewards/checkout_dialog.h",
         "brave_rewards/tip_dialog.cc",
         "brave_rewards/tip_dialog.h",
+      ]
+
+      deps += [
+        "//third_party/libaddressinput"
       ]
     }
 

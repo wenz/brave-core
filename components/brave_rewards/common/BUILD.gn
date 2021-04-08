@@ -1,3 +1,6 @@
+import("//brave/build/config.gni")
+import("//brave/components/payments/content/buildflags/buildflags.gni")
+
 source_set("features") {
   sources = [
     "features.cc",
@@ -12,8 +15,15 @@ source_set("common") {
     "pref_names.cc",
     "pref_names.h",
     "url_constants.cc",
-    "url_constants.h",
+    "url_constants.h"
   ]
+
+  if (enable_pay_with_bat) {
+    sources += [
+      "constants.cc",
+      "constants.h"
+    ]
+  }
 
   deps = [ ":features" ]
 }
