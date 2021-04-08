@@ -41,6 +41,7 @@ class HDKey {
   void SetPublicKey(const std::vector<uint8_t>& value);
   // base58 encoded of hash160 of public key
   std::string GetPublicExtendedKey() const;
+  std::vector<uint8_t> public_key() const { return public_key_; }
 
   void SetChainCode(const std::vector<uint8_t>& value);
 
@@ -56,11 +57,20 @@ class HDKey {
 
   // Sign the message using private key. The msg has to be exactly 32 bytes
   // Return 64 bytes ECDSA signature when succeed, otherwise empty vector
-  std::vector<uint8_t> Sign(const std::vector<uint8_t>& msg);
+  // if recid is not null, recovery id will be filled.
+  std::vector<uint8_t> Sign(const std::vector<uint8_t>& msg,
+                            int* recid = nullptr);
   // Verify the ECDSA signature using public key. The msg has to be exactly 32
   // bytes and the sig has to be 64 bytes.
   // Return true when successfully verified, false otherwise.
   bool Verify(const std::vector<uint8_t>& msg, const std::vector<uint8_t>& sig);
+
+  // Recover public key from signature and message. The msg has to be exactly 32
+  // bytes and the sig has to be 64 bytes.
+  // Return valid public key when succeed, all zero vector otherwise
+  std::vector<uint8_t> Recover(const std::vector<uint8_t>& msg,
+                               const std::vector<uint8_t>& sig,
+                               int recid);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HDKeyUnitTest, GenerateFromExtendedKey);
