@@ -1,12 +1,12 @@
 diff --git a/chrome/browser/ui/BUILD.gn b/chrome/browser/ui/BUILD.gn
-index 4dbdfc0c32c6ff789f2e05f7013997b9ce310818..03d1ff3a49eb81161e9f31c54d82ab1a75b8f624 100644
+index e5dd5217c3ed853370856b42fae7859033cd84e0..6f0254009616e7fc7af7c8f1089e39ef68c236c2 100644
 --- a/chrome/browser/ui/BUILD.gn
 +++ b/chrome/browser/ui/BUILD.gn
 @@ -598,6 +598,7 @@ static_library("ui") {
      "//ui/webui/resources/cr_components/customize_themes:mojom",
      "//v8:v8_version",
    ]
-+  deps+= [ "//brave/browser/ui" ]
++  import("//brave/browser/ui/brave_ui.gni") deps += brave_ui_deps
  
    # TODO(crbug/925153): Remove this circular dependency.
    allow_circular_includes_from = [
@@ -28,11 +28,3 @@ index 4dbdfc0c32c6ff789f2e05f7013997b9ce310818..03d1ff3a49eb81161e9f31c54d82ab1a
      }
    } else {  # 'OS!="win"
      # The Cast Linux build sets toolkit_views to false, but many files in this
-@@ -4298,6 +4302,7 @@ static_library("ui") {
-       "//ui/gfx/geometry",
-       "//ui/views:buildflags",
-     ]
-+    deps += [ "//brave/vendor/bat-native-ledger:headers" ]
-     public_deps += [ "//ui/base/dragdrop/mojom:mojom_headers" ]
- 
-     allow_circular_includes_from += [ "//chrome/browser/ui/views" ]
