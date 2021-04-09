@@ -14,8 +14,6 @@ class Profile;
 
 namespace brave_ads {
 
-class AdsServiceImpl;
-
 // Singleton that owns all AdsService and associates them with Profiles.
 class AdsServiceFactory : public BrowserContextKeyedServiceFactory {
  public:

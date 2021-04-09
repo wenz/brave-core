@@ -5,15 +5,11 @@
 
 #include "brave/browser/brave_ads/android/brave_ads_native_helper.h"
 
-#include <memory>
 #include <string>
 
 #include "base/android/jni_string.h"
+#include "brave/browser/brave_ads/ads_service_factory.h"
 #include "brave/browser/brave_rewards/rewards_service_factory.h"
-#include "brave/components/brave_ads/browser/ads_service.h"
-#include "brave/components/brave_ads/browser/ads_service_factory.h"
-#include "brave/components/brave_rewards/browser/rewards_service.h"
-#include "brave/components/brave_rewards/browser/rewards_service_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
 
 namespace brave_ads {
@@ -67,7 +63,7 @@ void JNI_BraveAdsNativeHelper_SetAdsEnabled(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_profile_android) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile_android);
-  RewardsService* rewards_service =
+  brave_rewards::RewardsService* rewards_service =
       brave_rewards::RewardsServiceFactory::GetForProfile(profile);
   DCHECK(rewards_service);
 

@@ -16,7 +16,6 @@ static jboolean JNI_BraveAdsNativeHelper_IsBraveAdsEnabled(
 
 static jboolean JNI_BraveAdsNativeHelper_IsLocaleValid(
     JNIEnv* env,
-    JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_profile_android);
 
 static jboolean JNI_BraveAdsNativeHelper_IsNewlySupportedLocale(

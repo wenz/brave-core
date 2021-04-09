@@ -6,10 +6,9 @@ For more details about the Chromium UI Platform, see [overview.md].
 
 ## Ad Notification Popup Views
 
-**AdNotificationPopupViews** are responsible for the display of ad notifications and informing **AdNotificationDelegate** listeners of
-**AdNotificationPopupView** events.
+**AdNotificationPopupView** is responsible for the display of ad notifications and informing **AdNotificationDelegate** listeners of **AdNotificationPopupView** events.
 
-**AdNotificationPopupViews** need an underlying canvas to paint onto. This is provided by adding a child **AdNotificationView** to a **views::widget**.
+**AdNotificationPopupView** needs an underlying canvas to paint onto. This is provided by adding **AdNotificationView** to a **views::widget**.
 
 ## Ad Notification View Factory
 
@@ -17,24 +16,21 @@ For more details about the Chromium UI Platform, see [overview.md].
 
 ## Text Ad Notification View
 
-**TextAdNotificationView** is a subclass of **AdNotificationView** which
-layouts and renders a text ad notification with a solid background, control buttons, title and body text.
+**TextAdNotificationView** is a subclass of **AdNotificationView** that lays out and renders a text ad notification with a solid background, control buttons, title and body text
 
 ## Ad Notification View
 
-**AdNotificationView** is a base class for the layout, rendering and mouse
-events of ad notifications.
+**AdNotificationView** is a base class for layout, rendering and mouse events of ad notifications.
 
-Different **AdNotificationView** subclasses are responsible for  implementing their own design. i.e, see [text_ad_notification_view.h](./text_ad_notification_view.h).
+Different **AdNotificationView** subclasses are responsible for implementing their own design. i.e, see [text_ad_notification_view.h](./text_ad_notification_view.h).
 
 ## Ad Notification Background Painter
 
-**AdNotificationBackgroundPainter** is responsible for drawing a solid
-background below any other part of the **AdNotificationView** with rounded corners on macOS and Linux.
+**AdNotificationBackgroundPainter** is responsible for drawing a solid background below any other part of the **AdNotificationView** with rounded corners on macOS and Linux.
 
 ## Ad Notification Header View
 
-**AdNotificationHeaderView** is responsible for the layout and rendering of the header which includes title text.
+**AdNotificationHeaderView** is responsible for the layout and rendering of the header which includes the title text.
 
 ## Ad Notification Control Buttons View
 

@@ -12,7 +12,7 @@
 namespace brave_ads {
 
 void AdNotificationPlatformBridge::ShowAdNotification(
-    const AdNotification& ad_notification) {
+    const AdNotification ad_notification) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   const base::android::ScopedJavaLocalRef<jstring> j_notification_id =
